@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stagelite — High-Performance Live Presentation Software</title>
+  <meta name="description" content="Modern, rock-solid 60 FPS live presentation and broadcast software for churches, worship teams, and live events. Free to download.">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <style>
+    :root {
+      --bg: #09090b;
+      --card-bg: #18181b;
+      --card-border: #27272a;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Subtle background grid & glow */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.5px;
+    }
+    .brand img {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: #ffffff;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      color: #60a5fa;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .badge-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #3b82f6;
+      box-shadow: 0 0 10px #3b82f6;
+    }
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-lead {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+
+    /* Hero CTA */
+    .cta-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-main-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #ffffff;
+      color: #09090b;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+      transition: all 0.2s ease;
+    }
+    .btn-main-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 255, 255, 0.25);
+      background: #f4f4f5;
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .os-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* App Preview / Wireframe */
+    .preview-card {
+      margin: 40px auto 70px;
+      background: #121214;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .preview-header {
+      background: #18181b;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .circle {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+    .circle-red { background: #ef4444; }
+    .circle-yellow { background: #eab308; }
+    .circle-green { background: #22c55e; }
+    .preview-body {
+      padding: 30px;
+      text-align: center;
+    }
+
+    /* Downloads Grid */
+    .section-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .section-title h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 10px;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .downloads-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 20px;
+      margin-bottom: 80px;
+    }
+    .download-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .download-card:hover {
+      border-color: #3f3f46;
+      transform: translateY(-2px);
+    }
+    .card-top {
+      margin-bottom: 20px;
+    }
+    .platform-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .platform-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+    }
+    .platform-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .card-files {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .file-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .file-btn:hover {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+    .file-ext {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* Features Section */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 24px;
+      margin-bottom: 80px;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+    .feature-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Install FAQ & Code Snippets */
+    .faq-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 32px;
+      margin-bottom: 80px;
+    }
+    .faq-item {
+      margin-bottom: 24px;
+    }
+    .faq-item:last-child {
+      margin-bottom: 0;
+    }
+    .faq-item h4 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+    .faq-item p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    code {
+      display: inline-block;
+      background: #09090b;
+      border: 1px solid #27272a;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: #38bdf8;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.2rem; }
+      .hero { padding: 40px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-pattern"></div>
+
+  <div class="container">
+    <!-- Navbar -->
+    <header>
+      <div class="nav">
+        <a href="#" class="brand">
+          <img src="assets/icon.svg" alt="Stagelite Logo">
+          <span>Stagelite</span>
+        </a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#downloads">Downloads</a>
+          <a href="#install-guide">Setup Guide</a>
+          <a href="Stagelite_Operator_Guide.pdf" target="_blank" style="color: #60a5fa;">Operator Manual (PDF)</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="badge-pill">
+        <span class="dot"></span>
+        <span id="version-badge">Stagelite v1.0 Production Release</span>
+      </div>
+
+      <h1>Rock-Solid Live Presentation<br>Built for the Modern Stage.</h1>
+
+      <p class="hero-lead">
+        An isolated 60 FPS presentation engine, hardware monitor verification, live WYSIWYG lyrics authoring, transparent OBS live-streaming overlays, and instant crash recovery.
+      </p>
+
+      <div class="cta-group">
+        <a id="hero-download-btn" href="#downloads" class="btn-main-download">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          <span id="hero-download-text">Download Stagelite</span>
+        </a>
+        <span id="hero-os-hint" class="os-hint">Detecting your operating system...</span>
+
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+          <a href="#downloads" class="btn-secondary">View All Platforms</a>
+          <a href="Stagelite_Operator_Guide.pdf" target="_blank" class="btn-secondary" style="border-color: rgba(59, 130, 246, 0.4);">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
+            Operator Manual (PDF)
+          </a>
+        </div>
+      </div>
+
+      <!-- Preview Mockup -->
+      <div class="preview-card">
+        <div class="preview-header">
+          <div class="circle circle-red"></div>
+          <div class="circle circle-yellow"></div>
+          <div class="circle circle-green"></div>
+          <span style="font-size: 0.8rem; color: #71717a; margin-left: 8px; font-weight: 500;">Stagelite — Master Studio Console (v1.0)</span>
+        </div>
+        <div class="preview-body">
+          <svg viewBox="0 0 800 280" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="10" width="220" height="250" rx="8" fill="#18181b" stroke="#27272a"/>
+            <text x="25" y="35" fill="#60a5fa" font-size="11" font-weight="700">SERVICE SCHEDULE</text>
+            <rect x="20" y="50" width="200" height="30" rx="4" fill="#27272a"/>
+            <text x="32" y="70" fill="#ffffff" font-size="10">Welcome & Announcements</text>
+            <rect x="20" y="90" width="200" height="30" rx="4" fill="#1d4ed8"/>
+            <text x="32" y="110" fill="#ffffff" font-size="10" font-weight="600">▶ Amazing Grace (4 Slides)</text>
+            <rect x="20" y="130" width="200" height="30" rx="4" fill="#27272a"/>
+            <text x="32" y="150" fill="#a1a1aa" font-size="10">Psalm 23 (Scripture)</text>
+
+            <rect x="245" y="10" width="350" height="250" rx="8" fill="#18181b" stroke="#27272a"/>
+            <text x="260" y="35" fill="#34d399" font-size="11" font-weight="700">SLIDE MATRIX</text>
+            <rect x="260" y="50" width="320" height="90" rx="6" fill="#09090b" stroke="#3f3f46"/>
+            <text x="420" y="90" fill="#ffffff" font-size="13" font-weight="600" text-anchor="middle">Amazing grace! How sweet the sound</text>
+            <text x="420" y="112" fill="#a1a1aa" font-size="11" text-anchor="middle">That saved a wretch like me!</text>
+            <rect x="260" y="160" width="95" height="55" rx="4" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="307" y="192" fill="#ffffff" font-size="10" font-weight="700" text-anchor="middle">Verse 1 (LIVE)</text>
+            <rect x="372" y="160" width="95" height="55" rx="4" fill="#27272a"/>
+            <text x="419" y="192" fill="#e4e4e7" font-size="10" text-anchor="middle">Verse 2</text>
+            <rect x="484" y="160" width="95" height="55" rx="4" fill="#27272a"/>
+            <text x="531" y="192" fill="#e4e4e7" font-size="10" text-anchor="middle">Verse 3</text>
+
+            <rect x="610" y="10" width="180" height="250" rx="8" fill="#18181b" stroke="#27272a"/>
+            <text x="625" y="35" fill="#f87171" font-size="11" font-weight="700">LIVE OUTPUT</text>
+            <rect x="625" y="50" width="150" height="80" rx="4" fill="#020617" stroke="#dc2626" stroke-width="1.5"/>
+            <text x="700" y="85" fill="#ffffff" font-size="10" font-weight="600" text-anchor="middle">AUDIENCE SCREEN</text>
+            <text x="700" y="102" fill="#ef4444" font-size="8.5" text-anchor="middle">● 60 FPS Render Loop</text>
+            <rect x="625" y="145" width="70" height="26" rx="4" fill="#27272a"/>
+            <text x="660" y="162" fill="#ffffff" font-size="9" text-anchor="middle">◀ Prev (←)</text>
+            <rect x="705" y="145" width="70" height="26" rx="4" fill="#2563eb"/>
+            <text x="740" y="162" fill="#ffffff" font-size="9" text-anchor="middle">Next (Space) ▶</text>
+            <rect x="625" y="180" width="70" height="24" rx="4" fill="#3f3f46"/>
+            <text x="660" y="196" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle">Blank (B)</text>
+            <rect x="705" y="180" width="70" height="24" rx="4" fill="#3f3f46"/>
+            <text x="740" y="196" fill="#e4e4e7" font-size="9" font-weight="700" text-anchor="middle">Clear (Esc)</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section id="downloads">
+      <div class="section-title">
+        <h2>Download Stagelite for Your Platform</h2>
+        <p>Direct standalone installers and application packages with zero telemetry or tracking.</p>
+      </div>
+
+      <div class="downloads-grid">
+        <!-- macOS -->
+        <div class="download-card" id="card-macos">
+          <div class="card-top">
+            <div class="platform-header">
+              <div class="platform-icon">🍏</div>
+              <div>
+                <div class="platform-title">macOS</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">macOS 12 Monterey or newer</div>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+              Optimized for Apple Silicon (M1/M2/M3/M4) with hardware video acceleration, plus Intel x86_64 support.
+            </p>
+          </div>
+          <div class="card-files">
+            <a id="link-mac-arm64" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-arm64.dmg" class="file-btn">
+              <span>Apple Silicon (M1/M2/M3/M4)</span>
+              <span class="file-ext">.dmg</span>
+            </a>
+            <a id="link-mac-x86" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-x86_64.dmg" class="file-btn">
+              <span>Intel (x86_64)</span>
+              <span class="file-ext">.dmg</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Windows -->
+        <div class="download-card" id="card-windows">
+          <div class="card-top">
+            <div class="platform-header">
+              <div class="platform-icon">🪟</div>
+              <div>
+                <div class="platform-title">Windows</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Windows 11 / 10 (64-bit)</div>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+              Clean NSIS Setup Installer with desktop shortcuts, or portable standalone executable.
+            </p>
+          </div>
+          <div class="card-files">
+            <a id="link-win-setup" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Setup.exe" class="file-btn">
+              <span>Windows Installer (Setup)</span>
+              <span class="file-ext">.exe</span>
+            </a>
+            <a id="link-win-portable" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite.exe" class="file-btn">
+              <span>Standalone Portable</span>
+              <span class="file-ext">.exe</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="download-card" id="card-linux">
+          <div class="card-top">
+            <div class="platform-header">
+              <div class="platform-icon">🐧</div>
+              <div>
+                <div class="platform-title">Linux</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Ubuntu, Debian, Fedora, Arch</div>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+              Plug-and-play universal AppImage with Wayland/X11 PipeWire support, and native Debian packages.
+            </p>
+          </div>
+          <div class="card-files">
+            <a id="link-linux-appimage" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.AppImage" class="file-btn">
+              <span>Universal AppImage (x64)</span>
+              <span class="file-ext">.AppImage</span>
+            </a>
+            <a id="link-linux-deb" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.deb" class="file-btn">
+              <span>Debian / Ubuntu Package</span>
+              <span class="file-ext">.deb</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features">
+      <div class="section-title">
+        <h2>Engineered for Zero Failure</h2>
+        <p>Built with Rust and modern Svelte 5 for unbeatable reliability in live environments.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Isolated 60 FPS Render Loop</h3>
+          <p>The audience window runs in an independent graphics loop. Heavy library imports, database queries, and slide edits never cause the projector to drop a frame.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🖥️</div>
+          <h3>Live Screen Verification</h3>
+          <p>Screen View mode uses native desktop capture (ScreenCaptureKit & DXGI) to mirror what physical projectors are showing right on your operator monitor.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">✍️</div>
+          <h3>Auto-Splitter & Grammar Check</h3>
+          <p>Paste long scripture chapters or songs and automatically split them into 2-line or 4-line slides. Built-in grammar audit catches typos before you go live.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📡</div>
+          <h3>Transparent OBS Studio Overlays</h3>
+          <p>Integrated broadcast web server provides alpha-transparent lower thirds, news tickers, and speaker cards directly to OBS Studio or vMix.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⏱️</div>
+          <h3>Stage Display & Nursery Alerts</h3>
+          <p>Confidence monitors show high-contrast lyrics, clock, and countdown timers to the stage, with discreet nursery alert tickers for the auditorium.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Offline-First & Crash Recovery</h3>
+          <p>Zero internet required. All data is saved instantly to embedded SQLite. If power is interrupted, 1-click resumes your exact slide in under 2 seconds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation & First-Run Notes -->
+    <section id="install-guide">
+      <div class="faq-section">
+        <h3 style="font-size: 1.3rem; margin-bottom: 20px;">First-Run & Installation Notes</h3>
+
+        <div class="faq-item">
+          <h4>🍏 macOS Gatekeeper Note (Unsigned / Ad-Hoc Build)</h4>
+          <p>Because Stagelite is distributed directly without the Mac App Store, macOS may show a prompt: <em>"Stagelite cannot be opened because Apple cannot check it for malicious software"</em>.</p>
+          <p><strong>To open:</strong> Go to <strong>System Settings > Privacy & Security</strong>, scroll down, and click <strong>Open Anyway</strong>. Alternatively, run this in Terminal: <code>xattr -cr /Applications/Stagelite.app</code></p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🪟 Windows SmartScreen Notice</h4>
+          <p>On Windows 10/11, Windows SmartScreen may show <em>"Windows protected your PC"</em> on brand-new builds. Click <strong>More info</strong> and then click <strong>Run anyway</strong>.</p>
+        </div>
+
+        <div class="faq-item">
+          <h4>🐧 Linux AppImage Execution</h4>
+          <p>Make sure to grant executable permissions before launching: <code>chmod +x Stagelite-Linux-x64.AppImage</code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Stagelite v1.0 Production Edition · Designed for High-Reliability Live Presentation.</p>
+      <p style="margin-top: 8px;">
+        <a href="Stagelite_Operator_Guide.pdf" target="_blank" style="color: #60a5fa; text-decoration: none;">Download Operator Manual (PDF)</a>
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // Smart OS & Architecture Detection
+    (function detectPlatform() {
+      const heroBtn = document.getElementById('hero-download-btn');
+      const heroText = document.getElementById('hero-download-text');
+      const heroHint = document.getElementById('hero-os-hint');
+
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const platform = (window.navigator.platform || '').toLowerCase();
+
+      // Default links
+      const macArm = document.getElementById('link-mac-arm64').href;
+      const macX86 = document.getElementById('link-mac-x86').href;
+      const winSetup = document.getElementById('link-win-setup').href;
+      const linuxAppImage = document.getElementById('link-linux-appimage').href;
+
+      if (userAgent.includes('mac') || platform.includes('mac')) {
+        // macOS: Try to detect Apple Silicon
+        // WebGL unmasked renderer or high core count usually indicates Apple Silicon
+        const isArm = userAgent.includes('arm') || userAgent.includes('apple silicon') || (navigator.maxTouchPoints > 0 && navigator.hardwareConcurrency >= 8);
+        
+        heroBtn.href = isArm ? macArm : macArm; // ARM64 is default modern Mac
+        heroText.textContent = isArm ? 'Download for macOS (Apple Silicon)' : 'Download for macOS (.dmg)';
+        heroHint.textContent = 'Detected macOS • Apple Silicon (.dmg) selected';
+        document.getElementById('card-macos').style.borderColor = '#3b82f6';
+      } else if (userAgent.includes('win') || platform.includes('win')) {
+        heroBtn.href = winSetup;
+        heroText.textContent = 'Download for Windows (Installer)';
+        heroHint.textContent = 'Detected Windows • 64-bit Setup Installer selected';
+        document.getElementById('card-windows').style.borderColor = '#3b82f6';
+      } else if (userAgent.includes('linux') || platform.includes('linux')) {
+        heroBtn.href = linuxAppImage;
+        heroText.textContent = 'Download for Linux (.AppImage)';
+        heroHint.textContent = 'Detected Linux • Universal AppImage selected';
+        document.getElementById('card-linux').style.borderColor = '#3b82f6';
+      } else {
+        heroBtn.href = '#downloads';
+        heroText.textContent = 'View All Downloads';
+        heroHint.textContent = 'Choose your platform below';
+      }
+    })();
+
+    // Optional dynamic release tag updater from GitHub API
+    (async function fetchLatestRelease() {
+      try {
+        const repo = '5u00n/stagelite-releases';
+        const res = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.tag_name) {
+          const badge = document.getElementById('version-badge');
+          if (badge) badge.textContent = `Stagelite ${data.tag_name} Latest Release`;
+        }
+      } catch (e) {
+        // Fallback to static version
+      }
+    })();
+  </script>
+</body>
+</html>
