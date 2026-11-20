@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stagelite — Operator & User Manual</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+      @bottom-right {
+        content: "Page " counter(page);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 8pt;
+        color: #71717a;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #18181b;
+      background: #ffffff;
+      line-height: 1.48;
+      font-size: 9.8pt;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Web view navigation & screen adjustments */
+    @media screen {
+      body {
+        background-color: #090a0f;
+        background-image: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+        color: #18181b;
+        padding-top: 64px;
+        padding-bottom: 80px;
+      }
+      .guide-web-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: rgba(9, 10, 15, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+      }
+      .nav-content {
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-btn {
+        padding: 7px 15px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .nav-btn-outline {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e4e4e7;
+      }
+      .nav-btn-outline:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+      }
+      .nav-btn-primary {
+        background: #3b82f6;
+        border: 1px solid #60a5fa;
+        color: #ffffff;
+      }
+      .nav-btn-primary:hover {
+        background: #2563eb;
+      }
+      .sheet {
+        width: 210mm;
+        min-height: 297mm;
+        height: auto !important;
+        max-width: 95vw;
+        margin: 28px auto !important;
+        padding: 16mm 14mm !important;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0,0,0,0.3);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .cover-sheet {
+        min-height: 297mm;
+        height: auto !important;
+      }
+    }
+
+    @media print {
+      .guide-web-nav {
+        display: none !important;
+      }
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .sheet {
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 260mm !important;
+        page-break-after: always !important;
+      }
+    }
+
+    /* Page container */
+    .sheet {
+      page-break-after: always;
+      position: relative;
+      height: 260mm; /* A4 is 297mm minus 32mm margins = 265mm */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+    .sheet:last-child {
+      page-break-after: avoid;
+    }
+
+    /* Header & Footer */
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid #e4e4e7;
+      padding-bottom: 5px;
+      margin-bottom: 14px;
+      font-size: 8pt;
+      font-weight: 600;
+      color: #71717a;
+      text-transform: uppercase;
+      
+    }
+
+    .sheet-footer {
+      margin-top: auto;
+      border-top: 1px solid #f4f4f5;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7.5pt;
+      color: #a1a1aa;
+    }
+
+    /* Cover Page */
+    .cover-sheet {
+      height: 260mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .cover-top {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
+      font-size: 8pt;
+      font-weight: 700;
+      color: #3f3f46;
+      text-transform: uppercase;
+      
+    }
+    .badge-primary {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+    }
+
+    .cover-title {
+      font-size: 32pt;
+      font-weight: 800;
+      color: #09090b;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .cover-subtitle {
+      font-size: 13.5pt;
+      color: #52525b;
+      line-height: 1.4;
+      max-width: 620px;
+      margin-bottom: 20px;
+    }
+
+    .cover-meta {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      border-top: 1.5px solid #e4e4e7;
+      padding-top: 16px;
+      font-size: 8.5pt;
+      color: #71717a;
+    }
+    .cover-meta strong {
+      display: block;
+      color: #09090b;
+      font-size: 9.5pt;
+      margin-bottom: 3px;
+    }
+
+    /* Headings */
+    h1 {
+      font-size: 19pt;
+      font-weight: 800;
+      color: #09090b;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #09090b;
+      margin-top: 14px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #f4f4f5;
+      padding-bottom: 4px;
+    }
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #18181b;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #27272a;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-left: 18px;
+      margin-bottom: 8px;
+    }
+    li {
+      margin-bottom: 3px;
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 10px 0;
+      font-size: 9pt;
+      border-left: 3.5px solid;
+    }
+    .callout-info {
+      background: #f0fdf4;
+      border-color: #16a34a;
+      color: #14532d;
+    }
+    .callout-tip {
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #1e3a8a;
+    }
+    .callout-warning {
+      background: #fffbeb;
+      border-color: #d97706;
+      color: #78350f;
+    }
+    .callout-danger {
+      background: #fef2f2;
+      border-color: #dc2626;
+      color: #7f1d1d;
+    }
+    .callout-title {
+      font-weight: 700;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Step boxes */
+    .step-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #09090b;
+      color: #ffffff;
+      font-size: 8pt;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-content strong {
+      color: #09090b;
+    }
+
+    /* Keys & Badges */
+    kbd {
+      display: inline-block;
+      padding: 1px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 8pt;
+      font-weight: 600;
+      color: #18181b;
+      background: #f4f4f5;
+      border: 1px solid #d4d4d8;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      
+    }
+    .status-on-air {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+    .status-standby {
+      background: #f4f4f5;
+      color: #71717a;
+      border: 1px solid #e4e4e7;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      font-size: 8.5pt;
+    }
+    th, td {
+      border: 1px solid #e4e4e7;
+      padding: 6px 9px;
+      text-align: left;
+    }
+    th {
+      background: #f4f4f5;
+      font-weight: 700;
+      color: #09090b;
+    }
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .card {
+      background: #fafafa;
+      border: 1px solid #e4e4e7;
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+
+    /* Diagram containers */
+    .diagram-container {
+      background: #09090b;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      color: #ffffff;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Web-only Navigation Header -->
+  <header class="guide-web-nav">
+    <div class="nav-content">
+      <a href="../website/index.html" class="nav-brand">
+        <svg width="24" height="24" viewBox="0 0 1024 1024" style="border-radius: 6px;"><rect width="1024" height="1024" rx="224" fill="#0f172a"/><polygon points="512,240 760,380 760,660 512,800 264,660 264,380" fill="none" stroke="#38bdf8" stroke-width="48"/><circle cx="512" cy="520" r="40" fill="#ffffff"/></svg>
+        <span>Stagelite Documentation</span>
+      </a>
+      <div class="nav-actions">
+        <a href="../website/index.html" class="nav-btn nav-btn-outline">← Back to Release Page</a>
+        <a href="../website/Stagelite_Operator_Guide.pdf" target="_blank" class="nav-btn nav-btn-outline">Download PDF (1.2 MB)</a>
+        <button onclick="window.print()" class="nav-btn nav-btn-primary">Print / Save PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== SHEET 1: COVER PAGE ==================== -->
+  <div class="sheet cover-sheet">
+    <div>
+      <div class="cover-top">
+        <span class="badge badge-primary">Stagelite v1.0 Production Edition</span>
+        <span class="badge">Official Operator Guide</span>
+        <span class="badge">Human Friendly</span>
+      </div>
+
+      <div class="cover-title">Stagelite<br>Operator & User Manual</div>
+      <div class="cover-subtitle">A comprehensive, practical guide for church AV teams, conference technicians, volunteers, and live event presenters.</div>
+    </div>
+
+    <!-- System Architecture Diagram -->
+    <div class="diagram-container" style="padding: 16px 12px; background: #0c0d12; border: 1px solid #27272a;">
+      <svg viewBox="0 0 680 230" width="100%" height="210" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="hostGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e293b"/>
+            <stop offset="100%" stop-color="#0f172a"/>
+          </linearGradient>
+          <linearGradient id="gradAudience" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e3a8a"/>
+            <stop offset="100%" stop-color="#172554"/>
+          </linearGradient>
+          <linearGradient id="gradStage" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#064e3b"/>
+            <stop offset="100%" stop-color="#022c22"/>
+          </linearGradient>
+          <linearGradient id="gradObs" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#581c87"/>
+            <stop offset="100%" stop-color="#3b0764"/>
+          </linearGradient>
+          <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+          </filter>
+        </defs>
+
+        <!-- Control Computer -->
+        <g filter="url(#cardShadow)">
+          <rect x="20" y="30" width="180" height="145" rx="10" fill="url(#hostGlow)" stroke="#3b82f6" stroke-width="1.5"/>
+          <rect x="30" y="40" width="160" height="100" rx="6" fill="#020617" stroke="#1e293b"/>
+          <!-- Window Dots -->
+          <circle cx="42" cy="50" r="3" fill="#ef4444"/>
+          <circle cx="50" cy="50" r="3" fill="#eab308"/>
+          <circle cx="58" cy="50" r="3" fill="#22c55e"/>
+          
+          <text x="110" y="76" fill="#38bdf8" font-size="10" font-weight="800" text-anchor="middle" letter-spacing="0.5">STAGELITE DESKTOP</text>
+          <text x="110" y="94" fill="#f8fafc" font-size="11" font-weight="700" text-anchor="middle">Master Studio Console</text>
+          <rect x="52" y="108" width="116" height="18" rx="9" fill="#1e293b" stroke="#334155"/>
+          <circle cx="64" cy="117" r="3" fill="#22c55e"/>
+          <text x="114" y="121" fill="#4ade80" font-size="8" font-weight="700" text-anchor="middle">60.0 FPS RENDER LOOP</text>
+          <!-- Stand -->
+          <rect x="95" y="175" width="30" height="15" fill="#334155"/>
+          <rect x="75" y="190" width="70" height="6" rx="3" fill="#475569"/>
+        </g>
+
+        <!-- Connecting Lines (Smooth Bezier) -->
+        <path d="M 200 68 C 245 68, 255 52, 290 52" stroke="#3b82f6" stroke-width="2.5" fill="none"/>
+        <circle cx="245" cy="60" r="3" fill="#60a5fa"/>
+
+        <path d="M 200 102 C 245 102, 255 116, 290 116" stroke="#10b981" stroke-width="2.5" fill="none"/>
+        <circle cx="245" cy="109" r="3" fill="#34d399"/>
+
+        <path d="M 200 136 C 245 136, 255 178, 290 178" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="4" fill="none"/>
+        <circle cx="245" cy="157" r="3" fill="#c084fc"/>
+
+        <!-- Target 1: Audience Projector -->
+        <g filter="url(#cardShadow)">
+          <rect x="290" y="28" width="195" height="52" rx="8" fill="url(#gradAudience)" stroke="#3b82f6" stroke-width="1.5"/>
+          <rect x="300" y="36" width="32" height="34" rx="6" fill="#1e40af"/>
+          <text x="316" y="58" fill="#93c5fd" font-size="16" text-anchor="middle">📽️</text>
+          <text x="342" y="47" fill="#ffffff" font-size="10.5" font-weight="800">AUDIENCE SCREEN</text>
+          <text x="342" y="62" fill="#93c5fd" font-size="8.5">Projector / Video Wall · 60 FPS Direct</text>
+        </g>
+
+        <!-- Target 2: Stage Monitor -->
+        <g filter="url(#cardShadow)">
+          <rect x="290" y="92" width="195" height="52" rx="8" fill="url(#gradStage)" stroke="#10b981" stroke-width="1.5"/>
+          <rect x="300" y="100" width="32" height="34" rx="6" fill="#065f46"/>
+          <text x="316" y="122" fill="#a7f3d0" font-size="16" text-anchor="middle">⏱️</text>
+          <text x="342" y="111" fill="#ffffff" font-size="10.5" font-weight="800">STAGE CONFIDENCE</text>
+          <text x="342" y="126" fill="#6ee7b7" font-size="8.5">Next Lyrics, Stage Clock & Timers</text>
+        </g>
+
+        <!-- Target 3: Broadcast Stream -->
+        <g filter="url(#cardShadow)">
+          <rect x="290" y="154" width="195" height="52" rx="8" fill="url(#gradObs)" stroke="#a855f7" stroke-width="1.5"/>
+          <rect x="300" y="162" width="32" height="34" rx="6" fill="#6b21a8"/>
+          <text x="316" y="184" fill="#e9d5ff" font-size="16" text-anchor="middle">📡</text>
+          <text x="342" y="173" fill="#ffffff" font-size="10.5" font-weight="800">OBS STUDIO / BROADCAST</text>
+          <text x="342" y="188" fill="#e9d5ff" font-size="8.5">Transparent Lower-Thirds & Tickers</text>
+        </g>
+
+        <!-- Target 4: Mobile Remote -->
+        <g filter="url(#cardShadow)">
+          <rect x="525" y="60" width="95" height="135" rx="12" fill="#18181b" stroke="#f59e0b" stroke-width="1.5"/>
+          <rect x="533" y="74" width="79" height="102" rx="6" fill="#09090b" stroke="#27272a"/>
+          <text x="572" y="112" fill="#fbbf24" font-size="10" font-weight="800" text-anchor="middle">MOBILE</text>
+          <text x="572" y="126" fill="#fef3c7" font-size="9" font-weight="600" text-anchor="middle">REMOTE</text>
+          <rect x="548" y="140" width="50" height="18" rx="4" fill="#27272a"/>
+          <text x="573" y="152" fill="#e4e4e7" font-size="8" text-anchor="middle">Next ▶</text>
+          <circle cx="572.5" cy="67" r="2" fill="#71717a"/>
+          <path d="M 485 118 L 525 118" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3" fill="none"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="cover-meta">
+      <div>
+        <strong>Who is this guide for?</strong>
+        Normal operators, volunteers, and sound booth staff who need clear, reliable instructions.
+      </div>
+      <div>
+        <strong>Supported Platforms</strong>
+        macOS, Windows 11/10, and Linux.
+      </div>
+      <div>
+        <strong>Emergency Hotkeys</strong>
+        <kbd>Space</kbd> Next Slide &nbsp; <kbd>B</kbd> Blank &nbsp; <kbd>Esc</kbd> Clear
+      </div>
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Documentation Suite</span>
+      <span>Published November 2026</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 2: QUICK START & 60-SEC CONCEPTS ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 1: Quick Start & Core Concepts</span>
+    </div>
+
+    <h1>1. Quick Start: The 3-Minute Volunteer Guide</h1>
+    <p>If you are arriving at the AV desk 10 minutes before a service starts, follow these four simple steps:</p>
+
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>Launch Stagelite and Select Your Run-Sheet:</strong>
+        Stagelite starts in <strong>Master Studio</strong> mode (<kbd>⌘1</kbd> / <kbd>Ctrl+1</kbd>). In the left column, click the first item of the service (e.g. <em>Welcome Announcements</em> or <em>Song 1</em>).
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>Verify Screen Connection:</strong>
+        Look at the top right of your screen. If the badge reads <span class="status-badge status-standby">○ STANDBY</span>, the output window is closed. Click the blue <strong>Open Audience Screen</strong> button in the right-hand panel. The badge will change to glowing red <span class="status-badge status-on-air">● ON AIR</span>.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>Click Any Slide to Project:</strong>
+        In the center slide matrix, click <strong>Verse 1</strong>. It projects immediately to the congregation screen. Press the <kbd>Space</kbd> key or <kbd>→</kbd> arrow key to advance through verses.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>Remember the Two Panic Buttons:</strong>
+        If the speaker starts talking before the slide is ready, or if an incorrect slide appears:
+        <br>• Tap <kbd>B</kbd> (Blank) to fade the screen to pure black. Tap <kbd>B</kbd> again to restore it.
+        <br>• Tap <kbd>Esc</kbd> (Clear) to remove all words while keeping the clean background graphic.
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+        The Golden Rule of Live Presentation
+      </div>
+      Never hesitate to press <kbd>B</kbd> (Blank) if you are unsure which slide to show. A black screen looks intentional and dignified; frantic clicking on the audience screen distracts the entire room.
+    </div>
+
+    <h2>2. Stagelite Core Concepts in 60 Seconds</h2>
+    <p>Stagelite organizes all presentation material into four clean, predictable layers:</p>
+
+    <div class="grid-2">
+      <div class="card">
+        <strong>Program (Run-Sheet)</strong>
+        <p style="margin-top: 4px; font-size: 8.8pt; color: #52525b;">The ordered playlist for the entire service (e.g. Welcome &rarr; 3 Worship Songs &rarr; Scripture &rarr; Sermon Notes &rarr; Benediction).</p>
+      </div>
+      <div class="card">
+        <strong>Show</strong>
+        <p style="margin-top: 4px; font-size: 8.8pt; color: #52525b;">A single reusable content deck (such as the hymn <em>Amazing Grace</em> or a guest speaker's 10-slide teaching deck).</p>
+      </div>
+      <div class="card">
+        <strong>Slide</strong>
+        <p style="margin-top: 4px; font-size: 8.8pt; color: #52525b;">A single visual card with formatted lyrics, bible verses, backgrounds, and auto-fit typographic styles.</p>
+      </div>
+      <div class="card">
+        <strong>Audience Output</strong>
+        <p style="margin-top: 4px; font-size: 8.8pt; color: #52525b;">An isolated 60 FPS hardware renderer that projects to projectors or TVs without stuttering or freezing.</p>
+      </div>
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>Quick Start & Core Concepts</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 3: MASTER STUDIO TOUR ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 2: Master Studio Interface Tour</span>
+    </div>
+
+    <h1>2. Master Studio Interface Tour</h1>
+    <p>The Master Studio (<kbd>⌘1</kbd> / <kbd>Ctrl+1</kbd>) is designed so you never have to hunt through menus during a live service:</p>
+
+    <!-- Master Studio Layout SVG Diagram -->
+    <div class="diagram-container" style="padding: 12px; margin: 10px 0; background: #0c0d12; border: 1px solid #27272a;">
+      <svg viewBox="0 0 720 280" width="100%" height="220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="studioStage" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#090d16"/>
+            <stop offset="100%" stop-color="#020408"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Window Frame -->
+        <rect x="5" y="5" width="710" height="270" rx="8" fill="#121318" stroke="#334155" stroke-width="1.5"/>
+        <rect x="5" y="5" width="710" height="32" rx="8" fill="#181a20"/>
+        <circle cx="22" cy="21" r="4.5" fill="#ef4444"/>
+        <circle cx="36" cy="21" r="4.5" fill="#eab308"/>
+        <circle cx="50" cy="21" r="4.5" fill="#22c55e"/>
+        <text x="75" y="25" fill="#f8fafc" font-size="10.5" font-weight="700">STAGELITE MASTER STUDIO</text>
+        
+        <!-- Mode Tabs -->
+        <rect x="220" y="9" width="62" height="20" rx="4" fill="#3b82f6"/>
+        <text x="251" y="23" fill="#ffffff" font-size="9" font-weight="700" text-anchor="middle">Studio ⌘1</text>
+        <rect x="286" y="9" width="64" height="20" rx="4" fill="#272a34"/>
+        <text x="318" y="23" fill="#94a3b8" font-size="9" text-anchor="middle">Displays ⌘2</text>
+        <rect x="354" y="9" width="64" height="20" rx="4" fill="#272a34"/>
+        <text x="386" y="23" fill="#94a3b8" font-size="9" text-anchor="middle">Planning ⌘3</text>
+        <rect x="422" y="9" width="58" height="20" rx="4" fill="#272a34"/>
+        <text x="451" y="23" fill="#94a3b8" font-size="9" text-anchor="middle">Editor ⌘4</text>
+        <rect x="484" y="9" width="68" height="20" rx="4" fill="#272a34"/>
+        <text x="518" y="23" fill="#94a3b8" font-size="9" text-anchor="middle">Presenter ⌘5</text>
+
+        <!-- Live Tally Pill -->
+        <rect x="620" y="8" width="85" height="22" rx="11" fill="#450a0a" stroke="#dc2626" stroke-width="1.2"/>
+        <circle cx="633" cy="19" r="3.5" fill="#ef4444"/>
+        <text x="668" y="23" fill="#fca5a5" font-size="8.5" font-weight="800" text-anchor="middle">● ON AIR</text>
+
+        <!-- Column 1: Service Run-Sheet -->
+        <rect x="15" y="44" width="160" height="198" rx="6" fill="#090a0f" stroke="#272a34"/>
+        <rect x="15" y="44" width="160" height="24" rx="6" fill="#141720"/>
+        <text x="25" y="60" fill="#60a5fa" font-size="9" font-weight="800" letter-spacing="0.4">1. SERVICE RUN-SHEET</text>
+        
+        <rect x="22" y="74" width="146" height="26" rx="4" fill="#181a20"/>
+        <text x="32" y="91" fill="#cbd5e1" font-size="8.5">1. Welcome Deck (2)</text>
+        
+        <rect x="22" y="104" width="146" height="26" rx="4" fill="#1d4ed8" stroke="#3b82f6" stroke-width="1"/>
+        <text x="32" y="121" fill="#ffffff" font-size="8.5" font-weight="700">▶ 2. Amazing Grace (4)</text>
+        
+        <rect x="22" y="134" width="146" height="26" rx="4" fill="#181a20"/>
+        <text x="32" y="151" fill="#94a3b8" font-size="8.5">3. Psalm 23 (Scripture)</text>
+        
+        <rect x="22" y="164" width="146" height="26" rx="4" fill="#181a20"/>
+        <text x="32" y="181" fill="#94a3b8" font-size="8.5">4. Sermon Teaching Notes</text>
+        
+        <text x="25" y="230" fill="#64748b" font-size="8">+ Add Item / Quick Scripture</text>
+
+        <!-- Column 2: Slide Matrix -->
+        <rect x="185" y="44" width="340" height="198" rx="6" fill="#090a0f" stroke="#272a34"/>
+        <rect x="185" y="44" width="340" height="24" rx="6" fill="#141720"/>
+        <text x="195" y="60" fill="#34d399" font-size="9" font-weight="800" letter-spacing="0.4">2. PRESENTATION SLIDE MATRIX</text>
+        
+        <!-- Live Slide Canvas -->
+        <rect x="195" y="74" width="320" height="74" rx="6" fill="url(#studioStage)" stroke="#334155"/>
+        <rect x="203" y="80" width="46" height="13" rx="3" fill="#1e3a8a"/>
+        <text x="226" y="90" fill="#93c5fd" font-size="7" font-weight="700" text-anchor="middle">VERSE 1</text>
+        <text x="355" y="107" fill="#f8fafc" font-size="11.5" font-weight="700" text-anchor="middle">Amazing grace! How sweet the sound</text>
+        <text x="355" y="125" fill="#cbd5e1" font-size="10" text-anchor="middle">That saved a wretch like me!</text>
+        
+        <!-- Thumbnail Grid -->
+        <rect x="195" y="154" width="98" height="52" rx="5" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.5"/>
+        <rect x="200" y="158" width="38" height="12" rx="3" fill="#2563eb"/>
+        <text x="219" y="167" fill="#ffffff" font-size="6.5" font-weight="800" text-anchor="middle">LIVE</text>
+        <text x="244" y="184" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle">Verse 1</text>
+        
+        <rect x="303" y="154" width="98" height="52" rx="5" fill="#181a20" stroke="#334155"/>
+        <text x="352" y="184" fill="#cbd5e1" font-size="8.5" text-anchor="middle">Verse 2</text>
+        
+        <rect x="411" y="154" width="98" height="52" rx="5" fill="#181a20" stroke="#334155"/>
+        <text x="460" y="184" fill="#cbd5e1" font-size="8.5" text-anchor="middle">Verse 3</text>
+        
+        <text x="195" y="230" fill="#64748b" font-size="8">Mode: Direct-Take Active · Space/Arrow to Advance · 60 FPS Render Loop</text>
+
+        <!-- Column 3: Audience Output & Tactical Transport -->
+        <rect x="535" y="44" width="170" height="198" rx="6" fill="#090a0f" stroke="#272a34"/>
+        <rect x="535" y="44" width="170" height="24" rx="6" fill="#141720"/>
+        <text x="545" y="60" fill="#f87171" font-size="9" font-weight="800" letter-spacing="0.4">3. AUDIENCE OUTPUT</text>
+        
+        <!-- Mirror -->
+        <rect x="545" y="74" width="150" height="66" rx="5" fill="#020617" stroke="#dc2626" stroke-width="1.5"/>
+        <rect x="550" y="79" width="60" height="14" rx="3" fill="#450a0a"/>
+        <text x="580" y="89" fill="#f87171" font-size="7" font-weight="800" text-anchor="middle">● 1080p 60 FPS</text>
+        <text x="620" y="112" fill="#ffffff" font-size="8" font-weight="600" text-anchor="middle">Amazing grace!...</text>
+
+        <!-- Transport Buttons -->
+        <rect x="545" y="146" width="72" height="24" rx="4" fill="#1e222d" stroke="#334155"/>
+        <text x="581" y="162" fill="#f1f5f9" font-size="8.5" font-weight="600" text-anchor="middle">◀ Prev (←)</text>
+        
+        <rect x="623" y="146" width="72" height="24" rx="4" fill="#2563eb" stroke="#3b82f6"/>
+        <text x="659" y="162" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle">Next (Space) ▶</text>
+
+        <rect x="545" y="174" width="72" height="22" rx="4" fill="#3f1414" stroke="#7f1d1d"/>
+        <text x="581" y="189" fill="#fca5a5" font-size="8" font-weight="700" text-anchor="middle">Blank (B)</text>
+        
+        <rect x="623" y="174" width="72" height="22" rx="4" fill="#272a34" stroke="#475569"/>
+        <text x="659" y="189" fill="#e2e8f0" font-size="8" font-weight="700" text-anchor="middle">Clear (Esc)</text>
+        
+        <text x="620" y="215" fill="#fbbf24" font-size="7.5" font-weight="600" text-anchor="middle">Countdown: 04:32 [Start]</text>
+
+        <!-- Bottom bar -->
+        <rect x="5" y="248" width="710" height="24" fill="#090a0f"/>
+        <circle cx="16" cy="260" r="3" fill="#22c55e"/>
+        <text x="24" y="263" fill="#4ade80" font-size="8" font-weight="600">ON AIR · External HDMI (1920×1080@60Hz) · Active: Amazing Grace · 60.0 FPS · 0.8ms</text>
+      </svg>
+    </div>
+
+    <h3>The Three Working Zones Explained:</h3>
+    <ul style="font-size: 9.2pt;">
+      <li><strong>Zone 1 (Left — Service Schedule):</strong> Displays your planned running order. Shows how many slides each item has, and highlights the currently active show in bold blue.</li>
+      <li><strong>Zone 2 (Center — Slide Matrix):</strong> Shows a large preview of the active slide at the top, and interactive thumbnail cards of all slides in the song at the bottom. Click any card to switch immediately.</li>
+      <li><strong>Zone 3 (Right — Audience Output & Tactical Transport):</strong> Features a live miniature mirror of what the congregation sees, next/previous buttons, panic controls, nursery alerts, and countdown timers.</li>
+    </ul>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>Master Studio Interface Tour</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 4: THE 5 OPERATOR MODES ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 3: The 5 Dashboard Modes</span>
+    </div>
+
+    <h1>3. The 5 Dashboard Modes</h1>
+    <p>Stagelite offers 5 purpose-built modes for different operational situations:</p>
+
+    <div class="card" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 10.5pt; color: #1d4ed8;">Mode 1: Studio Mode (<kbd>⌘1</kbd> / <kbd>Ctrl+1</kbd>)</strong>
+        <span class="badge">Primary Desk</span>
+      </div>
+      <p style="margin-top: 4px; font-size: 9pt;">The all-in-one console. Includes the run-sheet, slide matrix, and live audience mirror. Supports switching between <em>Instant Click-to-Live</em> and professional <em>Studio Mode (Preview / TAKE)</em>.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 10.5pt; color: #059669;">Mode 2: Displays (<kbd>⌘2</kbd> / <kbd>Ctrl+2</kbd>)</strong>
+        <span class="badge">Hardware Verification</span>
+      </div>
+      <p style="margin-top: 4px; font-size: 9pt;">Uses native desktop capture to show live video thumbnails of all connected physical monitors. Lets you record presentation output directly to video (MP4/WebM) with live FPS telemetry, or capture 1080p snapshots.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 10.5pt; color: #7c3aed;">Mode 3: Planning (<kbd>⌘3</kbd> / <kbd>Ctrl+3</kbd>)</strong>
+        <span class="badge">Mid-Week Programming</span>
+      </div>
+      <p style="margin-top: 4px; font-size: 9pt;">Build and re-order services during the week. Search millions of free CC0 backgrounds and photos from Openverse, import scripture, and run an automated grammar audit to catch typos before the event.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 10.5pt; color: #d97706;">Mode 4: WYSIWYG Slide Editor (<kbd>⌘4</kbd> / <kbd>Ctrl+4</kbd>)</strong>
+        <span class="badge">Authoring & Formatting</span>
+      </div>
+      <p style="margin-top: 4px; font-size: 9pt;">Full typographic control: font sizing (18px–96px), line height, text shadows, alignment, and auto-splitter (pastes whole songs and breaks them into 2-line or 4-line slides). Includes <em>Publish Mode</em> to edit privately while live.</p>
+    </div>
+
+    <div class="card" style="margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <strong style="font-size: 10.5pt; color: #dc2626;">Mode 5: Presenter View (<kbd>⌘5</kbd> / <kbd>Ctrl+5</kbd>)</strong>
+        <span class="badge">Minimalist Volunteer Mode</span>
+      </div>
+      <p style="margin-top: 4px; font-size: 9pt;">A high-contrast, distraction-free view with huge Next/Previous buttons, large status indicators, and an emergency in-place typo corrector for last-second fixes.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-.8-7.92A4.012 4.012 0 0112 6a4.012 4.012 0 014.8 3.92A4 4 0 0112 14z"></path></svg>
+        Pro Operator Tip: Instant Mode vs. Preview / TAKE
+      </div>
+      In Studio Mode, toggle the switch under <strong>STUDIO MODE</strong> to <strong>Active</strong>. Now, clicking slides stages them safely in the amber box. You can read them over and press <kbd>Enter</kbd> to take them live when the speaker speaks.
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>The 5 Dashboard Modes</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 5: STEP-BY-STEP RECIPES ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 4: Step-by-Step Operator Recipes</span>
+    </div>
+
+    <h1>4. Step-by-Step Operator Recipes</h1>
+
+    <h2>Recipe 1: Presenting Worship Lyrics with Confidence</h2>
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">Click the song title in the <strong>Service Schedule</strong> (left panel).</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">Click <strong>Verse 1</strong> to send the first lyrics live to the audience.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">Listen to the vocalist. As they reach the last syllable of the current line, press <kbd>Space</kbd> or <kbd>→</kbd>. Advancing early allows the congregation to read ahead naturally.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-content">If the leader repeats a chorus out of order, click the <strong>Chorus</strong> card directly in the center grid. Stagelite jumps straight to it without scrolling through other slides.</div>
+    </div>
+
+    <h2>Recipe 2: Staging Slides Safely (Studio Mode / TAKE)</h2>
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">In the right column, toggle <strong>Studio Mode</strong> to <strong>Active</strong>.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">Click any slide in the grid. It appears in the amber <strong>Next to Air</strong> staging box, but the audience screen does <strong>not</strong> change.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">When ready, press <kbd>Enter</kbd> (or click <strong>TAKE LIVE</strong>). The slide dissolves smoothly to the screen.</div>
+    </div>
+
+    <h2>Recipe 3: Nursery Alerts & Speaker Countdown Timers</h2>
+    <div class="grid-2">
+      <div class="card">
+        <strong>Pushing a Nursery Alert Banner</strong>
+        <ol style="margin-left: 16px; margin-top: 5px; font-size: 8.5pt;">
+          <li>In Master Studio (right panel), find <strong>QUICK ALERT TICKER</strong>.</li>
+          <li>Type the child's tag number (e.g. <code>Parent #314</code>).</li>
+          <li>Click <strong>Push Alert</strong>. A discreet banner appears across the bottom of the audience screen.</li>
+          <li>Click <strong>Clear</strong> to dismiss once the parent arrives.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <strong>Speaker Countdown Timer</strong>
+        <ol style="margin-left: 16px; margin-top: 5px; font-size: 8.5pt;">
+          <li>In Master Studio, find <strong>EVENT TIMERS</strong>.</li>
+          <li>Set the sermon length (e.g. <code>30:00</code>).</li>
+          <li>Click <strong>Start</strong>. The timer displays on the Stage Monitor facing the speaker.</li>
+          <li>If the speaker exceeds time, the timer turns amber with negative elapsed time (e.g. <code>-02:15</code>).</li>
+        </ol>
+      </div>
+    </div>
+
+    <h2>Recipe 4: Multi-Screen Routing & Identify Test Bars</h2>
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">In the AUDIENCE section of the right panel, view the target buttons: <strong>ALL</strong>, <strong>EXT</strong>, <strong>1</strong>, <strong>2</strong>.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">Click <strong>EXT</strong> to project exclusively to your external projector while keeping your laptop display dedicated to the control console.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">Click <strong>Identify</strong> to flash SMPTE color test patterns and confirm projector cabling.</div>
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>Step-by-Step Operator Recipes</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 6: BROADCAST, STAGE & TROUBLESHOOTING ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 5: Broadcast, Stage Display & Recovery</span>
+    </div>
+
+    <h1>5. Broadcast Graphics, Stage Displays & Recovery</h1>
+
+    <h2>Broadcast Graphics & OBS Studio Live-Streaming</h2>
+    <p>Stagelite provides an integrated broadcast graphics server for YouTube and Facebook live streams:</p>
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">Click <strong>Broadcast Graphics</strong> in the Master Studio toolbar.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">Choose a template: <strong>Lower-Thirds</strong>, <strong>News Tickers</strong>, <strong>Speaker Cards</strong>, or <strong>Overlays</strong>.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">Click <strong>Copy OBS Browser Source URL</strong> (default: <code>http://localhost:8420/overlay.html</code>).</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-content">In OBS Studio or vMix, add a <strong>Browser Source</strong>, paste the URL, and set width to <code>1920</code> and height to <code>1080</code>.</div>
+    </div>
+    <div class="step-box">
+      <div class="step-num">5</div>
+      <div class="step-content">In Stagelite, click <strong>TAKE ON AIR</strong> on any graphic. The overlay animates seamlessly over live video with crisp transparency.</div>
+    </div>
+
+    <h2>Presenter Stage Display (Confidence Monitor)</h2>
+    <p>Place a TV on the stage floor facing the speakers and worship band. The Stage Display shows:</p>
+    <ul style="font-size: 9pt;">
+      <li><strong>Current Slide Lyrics:</strong> High-contrast, large text readable from 30 feet away.</li>
+      <li><strong>Next Slide Preview:</strong> Shows the first line of the upcoming slide so the band knows what comes next.</li>
+      <li><strong>Digital Clock & Countdown:</strong> Real-time wall clock and remaining sermon countdown.</li>
+      <li><strong>Private Stage Messages:</strong> Operator notes (e.g. <em>"Please wrap up in 2 minutes"</em>) that the audience cannot see.</li>
+    </ul>
+
+    <h2>Smartphone Remote Control</h2>
+    <p>Control slides from anywhere in the auditorium using your iPhone, iPad, or Android phone:</p>
+    <ol style="margin-left: 18px; font-size: 9pt;">
+      <li>Connect your phone to the same Wi-Fi network as the presentation computer.</li>
+      <li>In Stagelite, open <strong>Preferences (<kbd>⌘,</kbd>)</strong> to view the remote server IP and 4-digit security PIN.</li>
+      <li>Open Safari or Chrome on your phone, visit the address, and enter the PIN to advance slides wirelessly.</li>
+    </ol>
+
+    <h2>Crash Recovery & Power Loss Safety</h2>
+    <div class="callout callout-danger">
+      <div class="callout-title">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+        Instant Session Recovery
+      </div>
+      Stagelite saves every state change to SQLite immediately. If power is interrupted, relaunch Stagelite and click <strong>Resume Session</strong> on the amber banner. Your exact run-sheet, slide position, and screen windows are restored in under 2 seconds.
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>Broadcast, Stage Display & Recovery</span>
+    </div>
+  </div>
+
+  <!-- ==================== SHEET 7: MASTER KEYBOARD CHEATSHEET ==================== -->
+  <div class="sheet">
+    <div class="sheet-header">
+      <span>Stagelite Operator Manual</span>
+      <span>Section 6: Master Keyboard Cheatsheet</span>
+    </div>
+
+    <h1>6. Master Keyboard Cheatsheet</h1>
+    <p>Print this sheet and tape it beside your presentation keyboard for instant reference during live events:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 25%;">Shortcut Key</th>
+          <th style="width: 25%;">Mode / Context</th>
+          <th>What It Does</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: #f0fdf4;">
+          <td><kbd>Space</kbd> or <kbd>→</kbd></td>
+          <td>Live Presentation</td>
+          <td><strong>Advance to Next Slide</strong> in the active show</td>
+        </tr>
+        <tr>
+          <td><kbd>←</kbd></td>
+          <td>Live Presentation</td>
+          <td><strong>Return to Previous Slide</strong></td>
+        </tr>
+        <tr style="background: #fef2f2;">
+          <td><kbd>B</kbd> or <kbd>F1</kbd></td>
+          <td>Live Presentation</td>
+          <td><strong>Toggle Blank Screen:</strong> Fades audience display to black immediately</td>
+        </tr>
+        <tr style="background: #fffbeb;">
+          <td><kbd>Esc</kbd></td>
+          <td>Live Presentation</td>
+          <td><strong>Clear Screen:</strong> Clears lyrics/scripture and returns to background</td>
+        </tr>
+        <tr style="background: #eff6ff;">
+          <td><kbd>Enter</kbd></td>
+          <td>Studio Mode</td>
+          <td><strong>TAKE:</strong> Sends staged preview slide live to the audience screen</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘1</kbd> / <kbd>Ctrl+1</kbd></td>
+          <td>Global</td>
+          <td>Switch to <strong>Master Studio Mode</strong> (Primary control console)</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘2</kbd> / <kbd>Ctrl+2</kbd></td>
+          <td>Global</td>
+          <td>Switch to <strong>Displays Mode</strong> (Hardware monitor verification)</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘3</kbd> / <kbd>Ctrl+3</kbd></td>
+          <td>Global</td>
+          <td>Switch to <strong>Planning Mode</strong> (Service preparation)</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘4</kbd> / <kbd>Ctrl+4</kbd></td>
+          <td>Global</td>
+          <td>Switch to <strong>WYSIWYG Slide Editor</strong> (Formatting & lyrics authoring)</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘5</kbd> / <kbd>Ctrl+5</kbd></td>
+          <td>Global</td>
+          <td>Switch to <strong>Presenter View</strong> (Minimalist volunteer view)</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘,</kbd> / <kbd>Ctrl+,</kbd></td>
+          <td>Global</td>
+          <td>Open <strong>Preferences & Settings</strong></td>
+        </tr>
+        <tr>
+          <td><kbd>⌘↩</kbd> / <kbd>Ctrl+Enter</kbd></td>
+          <td>Slide Editor</td>
+          <td><strong>Publish Edits:</strong> Push editor changes live to audience display</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘N</kbd> / <kbd>Ctrl+N</kbd></td>
+          <td>Planning</td>
+          <td>Create a new Program / Run-Sheet</td>
+        </tr>
+        <tr>
+          <td><kbd>⌘S</kbd> / <kbd>Ctrl+S</kbd></td>
+          <td>Slide Editor</td>
+          <td>Save changes to SQLite database</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: 14px; background: #fafafa; border-left: 4px solid #09090b;">
+      <strong style="font-size: 10pt;">AV Desk Checklist Before Every Service:</strong>
+      <ul style="margin-top: 6px; font-size: 8.8pt;">
+        <li>[ ] Computer connected to external projector or video switcher via HDMI/DisplayPort.</li>
+        <li>[ ] Projector turned on and set to correct input.</li>
+        <li>[ ] Stagelite launched and Audience Window opened (<span class="status-badge status-on-air">● ON AIR</span> badge active).</li>
+        <li>[ ] All service songs and scripture verified in the Service Schedule.</li>
+        <li>[ ] Test pattern (<kbd>Identify</kbd>) flashed to verify monitor alignment.</li>
+        <li>[ ] Panic hotkeys tested (<kbd>B</kbd> for Blank, <kbd>Space</kbd> for Next).</li>
+      </ul>
+    </div>
+
+    <div class="sheet-footer">
+      <span>Stagelite Operator Manual</span>
+      <span>Master Keyboard Cheatsheet</span>
+    </div>
+  </div>
+
+</body>
+</html>
