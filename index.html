@@ -3,30 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stagelite — Rock-Solid Live Presentation & Broadcast Software</title>
-  <meta name="description" content="High-performance, zero-failure live presentation and broadcast software for churches, worship teams, and live events. Isolated 60 FPS graphics engine, hardware screen verification, and transparent OBS overlays.">
+  <title>Stagelite — High-Reliability Live Presentation & Broadcast</title>
+  <meta name="description" content="A rock-solid 60 FPS live presentation system for churches, auditoriums, and live events. Isolated graphics loop, hardware screen verification, and transparent OBS overlays.">
   <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
   
   <style>
+    /* ==========================================================================
+       Stagelite Design Language: "Studio Tungsten & Matte Obsidian"
+       Minimal, functional, tactile, and dignified. Zero generic neon blobs or gridlines.
+       ========================================================================== */
     :root {
-      --bg: #090a0f;
-      --bg-card: #12131a;
-      --bg-card-hover: #171922;
-      --border: #232634;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(59, 130, 246, 0.35);
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --primary-glow: rgba(59, 130, 246, 0.25);
-      --emerald: #10b981;
-      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --bg: #0d0e12;
+      --bg-surface: #14151b;
+      --bg-surface-raised: #1a1c24;
+      --bg-surface-hover: #20232e;
+      --border: #232632;
+      --border-subtle: rgba(255, 255, 255, 0.07);
+      --border-focus: #3b82f6;
+      --text: #f4f4f6;
+      --text-muted: #8e92a0;
+      --text-dim: #5c606e;
       --amber: #f59e0b;
-      --rose: #f43f5e;
-      --purple: #a855f7;
-      --cyan: #06b6d4;
+      --amber-dim: #78350f;
+      --green: #10b981;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
     * {
@@ -42,51 +44,30 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    /* Ambient Spotlight & Grid Pattern (Aceternity UI style) */
-    .bg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-image:
-        radial-gradient(circle at 50% -10%, rgba(59, 130, 246, 0.22) 0%, transparent 60%),
-        radial-gradient(circle at 85% 25%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 15% 45%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
-        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
     .container {
-      max-width: 1200px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 0 24px;
-      position: relative;
-      z-index: 1;
     }
 
-    /* Navigation Bar */
+    /* Top Navigation */
     header {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(9, 10, 15, 0.82);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      z-index: 90;
+      background: rgba(13, 14, 18, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-subtle);
-      transition: all 0.2s ease;
     }
     .nav {
-      height: 68px;
+      height: 64px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -98,1465 +79,1049 @@
       text-decoration: none;
       color: #ffffff;
       font-weight: 700;
-      font-size: 1.25rem;
-      letter-spacing: -0.4px;
+      font-size: 1.15rem;
+      letter-spacing: -0.3px;
     }
     .brand-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 9px;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
     }
-    .brand-tag {
+    .brand-version {
+      font-family: var(--font-mono);
       font-size: 0.72rem;
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
       padding: 2px 7px;
-      border-radius: 9999px;
-      font-weight: 600;
-      letter-spacing: 0.2px;
+      border-radius: 4px;
     }
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 22px;
+      gap: 24px;
     }
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 500;
       transition: color 0.15s ease;
     }
     .nav-links a:hover {
       color: #ffffff;
     }
-    .nav-actions {
+    .nav-cta {
       display: flex;
       align-items: center;
       gap: 12px;
     }
-    .btn-nav-guide {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 7px 15px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      color: #cbd5e1;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-    .btn-nav-guide:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .btn-nav-download {
+    .btn-manual-link {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 18px;
-      border-radius: 8px;
-      background: var(--primary);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-subtle);
+      transition: all 0.15s ease;
+    }
+    .btn-manual-link:hover {
       color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .btn-get {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      color: #0d0e12;
+      padding: 7px 16px;
+      border-radius: 6px;
       font-size: 0.88rem;
       font-weight: 600;
       text-decoration: none;
-      box-shadow: 0 2px 12px var(--primary-glow);
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
-    .btn-nav-download:hover {
-      background: var(--primary-hover);
-      transform: translateY(-1px);
+    .btn-get:hover {
+      background: #e4e4e7;
     }
 
     /* Hero Section */
     .hero {
-      padding: 75px 0 50px;
+      padding: 72px 0 48px;
       text-align: center;
     }
-    .badge-pill {
+    .status-tag {
       display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 6px 16px;
-      border-radius: 9999px;
-      background: rgba(59, 130, 246, 0.1);
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      color: #60a5fa;
-      font-size: 0.84rem;
-      font-weight: 600;
-      margin-bottom: 24px;
-      box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
-    }
-    .badge-pill .pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      box-shadow: 0 0 10px #10b981;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-    }
-
-    h1 {
-      font-size: 3.5rem;
-      font-weight: 800;
-      line-height: 1.14;
-      letter-spacing: -1.8px;
-      margin-bottom: 22px;
-      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero-lead {
-      font-size: 1.25rem;
-      color: var(--text-muted);
-      max-width: 740px;
-      margin: 0 auto 36px;
-      line-height: 1.6;
-    }
-
-    /* Hero CTA */
-    .cta-group {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    .cta-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 14px;
-    }
-    .btn-hero-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: #ffffff;
-      color: #090a0f;
-      padding: 15px 32px;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      font-weight: 700;
-      text-decoration: none;
-      box-shadow: 0 4px 25px rgba(255, 255, 255, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .btn-hero-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(255, 255, 255, 0.28);
-      background: #f8fafc;
-    }
-    .btn-hero-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: #f1f5f9;
-      padding: 15px 26px;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      text-decoration: none;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
-    }
-    .btn-hero-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
-    }
-    .btn-hero-manual {
-      border-color: rgba(59, 130, 246, 0.4);
-      color: #93c5fd;
-    }
-    .btn-hero-manual:hover {
-      background: rgba(59, 130, 246, 0.12);
-      border-color: #3b82f6;
-      color: #ffffff;
-    }
-    .os-hint-text {
-      font-size: 0.86rem;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Key Performance Metric Chips */
-    .metric-strip {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px 28px;
-      margin: 40px auto 20px;
-      padding: 14px 24px;
-      border-radius: 12px;
-      background: rgba(18, 19, 26, 0.6);
-      border: 1px solid var(--border-subtle);
-      max-width: 960px;
-    }
-    .metric-item {
-      display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.86rem;
-      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    .metric-item strong {
-      color: #ffffff;
-      font-weight: 700;
-    }
-    .metric-dot {
+    .status-tag .tally-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #3b82f6;
+      background: #10b981;
+    }
+    h1 {
+      font-size: 3.4rem;
+      font-weight: 800;
+      line-height: 1.12;
+      letter-spacing: -1.8px;
+      margin-bottom: 20px;
+      color: #ffffff;
+      max-width: 860px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero-lead {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+    .btn-hero-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      color: #090a0e;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-hero-download:hover {
+      background: #e4e4e7;
+      transform: translateY(-1px);
+    }
+    .btn-hero-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: #e4e4e7;
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-hero-ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .os-info-line {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* Telemetry strip */
+    .hardware-bar {
+      margin: 36px auto 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 24px;
+      padding: 12px 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      max-width: 860px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .hw-metric strong {
+      color: #ffffff;
+      font-weight: 600;
     }
 
     /* ==========================================================================
-       Interactive Pro Studio Console Showcase (High-Fidelity App Screen)
+       The Studio Console (Clean, Precision Architecture)
        ========================================================================== */
-    .showcase-wrapper {
-      margin: 45px auto 90px;
+    .console-section {
+      margin: 40px auto 80px;
     }
-    .showcase-header-nav {
+    .console-header {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-end;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 16px;
     }
-    .mode-tab-group {
+    .console-title-group h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.4px;
+    }
+    .console-title-group span {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+    }
+    .tabs-bar {
       display: flex;
-      gap: 6px;
-      background: #12131a;
+      gap: 4px;
+      background: var(--bg-surface);
       border: 1px solid var(--border);
-      padding: 4px;
-      border-radius: 10px;
-    }
-    .mode-tab {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
+      padding: 3px;
       border-radius: 7px;
+    }
+    .tab-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 0.88rem;
+      padding: 6px 14px;
+      font-size: 0.82rem;
       font-weight: 600;
+      border-radius: 5px;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.15s ease;
     }
-    .mode-tab kbd {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-      padding: 1px 5px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-    .mode-tab:hover {
+    .tab-btn:hover {
       color: #ffffff;
-      background: rgba(255, 255, 255, 0.04);
     }
-    .mode-tab.active {
+    .tab-btn.active {
       background: #2563eb;
       color: #ffffff;
-      box-shadow: 0 2px 10px var(--primary-glow);
     }
-    .mode-tab.active kbd {
+    .tab-btn kbd {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       background: rgba(0, 0, 0, 0.25);
-      border-color: rgba(255, 255, 255, 0.25);
-      color: #ffffff;
+      padding: 1px 4px;
+      border-radius: 3px;
     }
 
-    .app-window {
-      background: #0d0e14;
-      border: 1px solid #272a38;
-      border-radius: 16px;
+    /* Console Window Frame */
+    .console-window {
+      background: #090a0d;
+      border: 1px solid var(--border);
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 25px 70px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
     }
-
-    /* Window Titlebar */
-    .app-titlebar {
-      background: #15161f;
-      border-bottom: 1px solid #232634;
-      padding: 10px 18px;
+    .console-topbar {
+      background: #121318;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 0.78rem;
     }
-    .window-controls {
+    .console-traffic-lights {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
     }
-    .w-dot {
-      width: 12px;
-      height: 12px;
+    .light {
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
     }
-    .w-red { background: #ef4444; border: 1px solid #dc2626; }
-    .w-yellow { background: #eab308; border: 1px solid #ca8a04; }
-    .w-green { background: #22c55e; border: 1px solid #16a34a; }
-    
-    .window-title {
-      font-size: 0.82rem;
-      font-weight: 600;
+    .light-r { background: #ef4444; }
+    .light-y { background: #eab308; }
+    .light-g { background: #22c55e; }
+    .console-doc-name {
       color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-weight: 600;
+      margin-left: 8px;
     }
-    .window-title .doc-badge {
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 8px;
-      border-radius: 4px;
-      color: #94a3b8;
-      font-size: 0.75rem;
-    }
-
-    .window-telemetry {
+    .console-tally {
       display: flex;
       align-items: center;
       gap: 14px;
-      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
     }
-    .on-air-pill {
+    .on-air-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(220, 38, 38, 0.18);
-      border: 1px solid rgba(220, 38, 38, 0.5);
+      gap: 5px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
       color: #fca5a5;
-      padding: 3px 10px;
-      border-radius: 9999px;
+      padding: 2px 8px;
+      border-radius: 4px;
       font-weight: 700;
-      letter-spacing: 0.5px;
     }
-    .on-air-pill .dot {
-      width: 7px;
-      height: 7px;
+    .on-air-badge .pip {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #ef4444;
-      box-shadow: 0 0 8px #ef4444;
-    }
-    .render-metric {
-      color: #4ade80;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
 
-    /* Screen View Container */
-    .view-content-pane {
+    /* Panes */
+    .view-pane {
       display: none;
-      animation: fadeIn 0.25s ease;
     }
-    .view-content-pane.active {
+    .view-pane.active {
       display: block;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
 
-    /* ==================== VIEW 1: MASTER STUDIO 3-COL LAYOUT ==================== */
-    .studio-grid {
+    /* Master Studio 3-Column Layout */
+    .studio-columns {
       display: grid;
-      grid-template-columns: 240px 1fr 280px;
-      min-height: 520px;
-      background: #090a0f;
+      grid-template-columns: 220px 1fr 265px;
+      min-height: 490px;
+      background: #090a0d;
     }
-    .studio-grid > div {
+    .studio-columns > div {
       min-width: 0;
     }
-
-    /* Column 1: Run-Sheet */
-    .col-rundown {
-      background: #101118;
+    .col-left {
+      background: #0f1015;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      min-width: 0;
     }
-    .panel-header {
-      padding: 12px 16px;
+    .col-title {
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      color: #60a5fa;
-      text-transform: uppercase;
     }
-    .panel-header-secondary {
-      color: #34d399;
-    }
-    .panel-header-output {
-      color: #f87171;
-    }
-    .rundown-list {
+    .playlist-items {
       padding: 8px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      overflow-y: auto;
+      gap: 5px;
     }
-    .rundown-item {
-      padding: 10px 12px;
-      border-radius: 8px;
-      background: #161822;
+    .playlist-row {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #14151b;
       border: 1px solid transparent;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
       cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .rundown-item:hover {
-      background: #1c1f2c;
-      border-color: #2b3044;
-    }
-    .rundown-item.active {
-      background: rgba(37, 99, 235, 0.18);
-      border-color: #3b82f6;
-    }
-    .rundown-item-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--text-dim);
-      padding-top: 1px;
-    }
-    .rundown-item.active .rundown-item-num {
-      color: #60a5fa;
-    }
-    .rundown-item-body {
-      flex: 1;
-    }
-    .rundown-item-title {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      margin-bottom: 3px;
-    }
-    .rundown-item-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-    }
-    .tag-category {
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-    .tag-worship { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
-    .tag-scripture { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; }
-    .tag-sermon { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; }
-
-    .rundown-footer {
-      margin-top: auto;
-      padding: 12px 14px;
-      border-top: 1px solid var(--border);
-      background: #0d0e14;
+      font-size: 0.82rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.78rem;
+      transition: all 0.12s ease;
     }
-    .rec-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: #f43f5e;
-      font-weight: 700;
+    .playlist-row:hover {
+      background: #1c1d25;
+    }
+    .playlist-row.active {
+      background: rgba(37, 99, 235, 0.15);
+      border-color: #3b82f6;
+    }
+    .playlist-row strong {
+      color: #f1f5f9;
+      font-weight: 600;
+    }
+    .playlist-row.active strong {
+      color: #60a5fa;
+    }
+    .playlist-count {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
     }
 
-    /* Column 2: Center Stage Canvas & Slide Matrix */
-    .col-stage {
+    /* Center Stage */
+    .col-center {
       display: flex;
       flex-direction: column;
-      background: #090a0f;
+      background: #090a0d;
     }
-    .stage-canvas-wrapper {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .stage-cinema-screen {
+    .cinema-artboard {
       aspect-ratio: 16 / 9;
-      max-height: 250px;
-      margin: 0 auto;
-      background: radial-gradient(circle at 50% 30%, #1e293b 0%, #090d16 65%, #020617 100%);
-      border: 1px solid #334155;
-      border-radius: 10px;
-      position: relative;
+      max-height: 230px;
+      margin: 16px;
+      background: #000000;
+      border: 1px solid #232632;
+      border-radius: 8px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 35px rgba(59, 130, 246, 0.12);
+      position: relative;
     }
-    .stage-live-tag {
+    .cinema-chip {
       position: absolute;
-      top: 12px;
-      left: 14px;
-      background: rgba(37, 99, 235, 0.35);
-      border: 1px solid rgba(59, 130, 246, 0.6);
-      color: #93c5fd;
-      font-size: 0.7rem;
+      top: 10px;
+      left: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
       font-weight: 700;
-      padding: 2px 8px;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      padding: 2px 7px;
       border-radius: 4px;
-      letter-spacing: 0.5px;
     }
-    .stage-screen-lyrics {
+    .cinema-text {
       font-size: 1.35rem;
       font-weight: 700;
-      line-height: 1.45;
+      line-height: 1.4;
       color: #ffffff;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
       max-width: 90%;
     }
-    .stage-screen-lyrics .sub-line {
+    .cinema-text span {
       display: block;
-      color: #cbd5e1;
       font-size: 1.15rem;
-      margin-top: 6px;
+      color: #cbd5e1;
       font-weight: 500;
+      margin-top: 4px;
     }
 
-    /* Slide Matrix Thumbnail Grid */
-    .slide-matrix-area {
-      padding: 14px 20px;
+    /* Thumbnail Deck */
+    .deck-area {
+      padding: 0 16px 16px;
       flex: 1;
     }
-    .matrix-toolbar {
+    .deck-header {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 0.78rem;
-      color: var(--text-dim);
     }
-    .slide-grid {
+    .deck-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
-    .slide-card {
+    .thumb-card {
       aspect-ratio: 16 / 9;
-      background: #141620;
-      border: 1px solid #272a38;
-      border-radius: 8px;
-      padding: 10px;
+      background: #13141a;
+      border: 1px solid #222530;
+      border-radius: 6px;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
-      position: relative;
-      transition: all 0.15s ease;
+      font-size: 0.72rem;
+      transition: all 0.12s ease;
     }
-    .slide-card:hover {
-      border-color: #3f445c;
-      transform: translateY(-2px);
+    .thumb-card:hover {
+      border-color: #3b4052;
     }
-    .slide-card.active-live {
+    .thumb-card.active {
       border-color: #3b82f6;
-      background: #17213b;
-      box-shadow: 0 0 16px rgba(59, 130, 246, 0.35);
+      background: #171a25;
     }
-    .slide-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .slide-card-badge {
-      font-size: 0.68rem;
+    .thumb-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
       font-weight: 700;
       color: #94a3b8;
     }
-    .slide-card.active-live .slide-card-badge {
+    .thumb-card.active .thumb-tag {
       color: #60a5fa;
     }
-    .slide-tally-pill {
-      font-size: 0.62rem;
-      background: #ef4444;
-      color: #ffffff;
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-weight: 800;
-    }
-    .slide-card-body {
-      font-size: 0.75rem;
-      color: #e2e8f0;
-      line-height: 1.35;
-      font-weight: 500;
+    .thumb-preview-text {
+      color: #cbd5e1;
+      line-height: 1.3;
       display: -webkit-box;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    /* Column 3: Tactical Transport & Live Mirror */
-    .col-tactical {
-      background: #101118;
+    /* Right Column: Tactical Transport */
+    .col-right {
+      background: #0f1015;
       border-left: 1px solid var(--border);
-      padding: 14px 14px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      min-width: 0;
+      gap: 14px;
     }
-    .audience-mirror-box {
-      background: #020617;
-      border: 1.5px solid #dc2626;
-      border-radius: 8px;
+    .screen-mirror {
+      background: #000000;
+      border: 1px solid #ef4444;
+      border-radius: 6px;
       aspect-ratio: 16 / 9;
-      position: relative;
+      padding: 8px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 10px;
       text-align: center;
-      box-shadow: 0 0 18px rgba(220, 38, 38, 0.2);
+      position: relative;
     }
-    .mirror-label {
+    .mirror-badge {
       position: absolute;
       top: 6px;
-      left: 8px;
-      font-size: 0.64rem;
-      font-weight: 800;
+      left: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
       color: #ef4444;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-weight: 700;
     }
-    .mirror-text {
-      font-size: 0.8rem;
+    .mirror-lyrics-label {
+      font-size: 0.78rem;
       color: #ffffff;
       font-weight: 600;
       line-height: 1.25;
     }
 
     /* Transport Buttons */
-    .transport-btn-grid {
+    .controls-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 6px;
     }
-    .btn-t-primary {
-      grid-column: span 1;
-      padding: 9px 8px;
-      border-radius: 7px;
-      background: #2563eb;
-      border: 1px solid #3b82f6;
-      color: #ffffff;
-      font-size: 0.82rem;
-      font-weight: 700;
+    .btn-ctl {
+      padding: 8px 6px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 4px;
-      white-space: nowrap;
-      transition: background 0.15s ease;
+      border: 1px solid var(--border);
+      background: #171820;
+      color: #f1f5f9;
+      transition: all 0.12s ease;
     }
-    .btn-t-primary:hover {
+    .btn-ctl:hover {
+      background: #21232e;
+    }
+    .btn-ctl-main {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .btn-ctl-main:hover {
       background: #1d4ed8;
     }
-    .btn-t-nav {
-      padding: 9px 8px;
-      border-radius: 7px;
-      background: #1b1e2a;
-      border: 1px solid #2d3348;
-      color: #e2e8f0;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      white-space: nowrap;
-      transition: background 0.15s ease;
-    }
-    .btn-t-nav:hover {
-      background: #242838;
-    }
-    .btn-t-panic {
-      padding: 8px 6px;
-      border-radius: 7px;
+    .btn-ctl-panic {
       background: rgba(239, 68, 68, 0.12);
-      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-color: rgba(239, 68, 68, 0.35);
       color: #fca5a5;
-      font-size: 0.78rem;
       font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s ease;
     }
-    .btn-t-panic:hover {
-      background: rgba(239, 68, 68, 0.25);
-      color: #ffffff;
-    }
-    .btn-t-clear {
-      padding: 8px 6px;
-      border-radius: 7px;
-      background: #1b1e2a;
-      border: 1px solid #2d3348;
-      color: #cbd5e1;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s ease;
-    }
-    .btn-t-clear:hover {
-      background: #272c3d;
-      color: #ffffff;
+    .btn-ctl-panic:hover {
+      background: rgba(239, 68, 68, 0.22);
     }
 
-    /* Stage Confidence & Countdown */
-    .tactical-box {
-      background: #141622;
-      border: 1px solid #232638;
-      border-radius: 8px;
-      padding: 12px;
+    .telemetry-card {
+      background: #14151b;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.78rem;
     }
-    .tactical-box-header {
-      font-size: 0.72rem;
-      font-weight: 700;
+    .telemetry-card-hdr {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
       color: var(--text-dim);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
     }
-    .confidence-row {
-      font-size: 0.8rem;
-      color: #cbd5e1;
-      margin-bottom: 4px;
-    }
-    .confidence-next {
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-    .timer-display {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #fbbf24;
-      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
-      letter-spacing: 1px;
+    .telemetry-countdown {
+      font-family: var(--font-mono);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--amber);
     }
 
-    /* ==================== VIEW 2: SCREEN VERIFICATION ==================== */
-    .screenview-grid {
+    /* Alternate Panes */
+    .alt-pane-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       padding: 24px;
-      background: #090a0f;
     }
-    .hardware-display-card {
-      background: #12131c;
-      border: 1px solid #272a38;
-      border-radius: 12px;
-      overflow: hidden;
+    .alt-card {
+      background: #121318;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
     }
-    .hw-card-top {
-      padding: 12px 14px;
-      background: #171924;
-      border-bottom: 1px solid #272a38;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .hw-name {
+    .alt-card h4 {
+      font-size: 0.92rem;
       font-weight: 700;
-      font-size: 0.88rem;
+      margin-bottom: 4px;
       color: #f1f5f9;
     }
-    .hw-spec {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-    .hw-feed {
-      aspect-ratio: 16 / 9;
-      background: #020617;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-      text-align: center;
-      position: relative;
-    }
-    .hw-tally-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .hw-badge-live { background: #dc2626; color: #ffffff; }
-    .hw-badge-stage { background: #059669; color: #ffffff; }
-    .hw-badge-foyer { background: #7c3aed; color: #ffffff; }
-
-    /* ==================== VIEW 3: SLIDE EDITOR ==================== */
-    .editor-view-container {
-      display: grid;
-      grid-template-columns: 280px 1fr 280px;
-      min-height: 480px;
-      background: #090a0f;
-    }
-    .editor-toolbar-col {
-      background: #101118;
-      border-right: 1px solid var(--border);
-      padding: 16px;
-    }
-    .editor-canvas-center {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .editor-sheet {
-      width: 100%;
-      max-width: 580px;
-      aspect-ratio: 16 / 9;
-      background: #141724;
-      border: 1px solid #3b82f6;
-      border-radius: 8px;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
-    }
-    .editor-meta-col {
-      background: #101118;
-      border-left: 1px solid var(--border);
-      padding: 16px;
-    }
-
-    /* ==================== VIEW 4: OBS BROADCAST ==================== */
-    .obs-view-container {
-      padding: 24px;
-      background: #090a0f;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .obs-stream-mockup {
-      aspect-ratio: 16 / 9;
-      max-height: 380px;
-      margin: 0 auto;
-      width: 100%;
-      background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
-      border-radius: 12px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 24px;
-      border: 1px solid #334155;
-    }
-    .obs-speaker-cam {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 3rem;
-      opacity: 0.2;
-    }
-    .obs-lower-third {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      border-left: 4px solid #3b82f6;
-      border-radius: 0 8px 8px 0;
-      padding: 12px 20px;
-      max-width: 600px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    }
-    .obs-ticker-bar {
-      margin-top: 10px;
-      background: rgba(2, 6, 23, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
-      padding: 6px 14px;
+    .alt-card p {
       font-size: 0.8rem;
-      color: #94a3b8;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      color: var(--text-muted);
     }
 
     /* ==========================================================================
-       Official Documentation & Field Guide Showcase (Redesigned & Highlighted)
+       Operator Manual Section (Field Technical Handbook Style)
+       Clean, authentic, dignified. No tilted 3D mockups.
        ========================================================================== */
-    .docs-showcase-section {
-      padding: 60px 0 90px;
+    .manual-section {
+      padding: 60px 0 80px;
       border-top: 1px solid var(--border-subtle);
     }
-    .docs-showcase-card {
-      background: linear-gradient(180deg, #13141f 0%, #0c0d14 100%);
-      border: 1px solid #2b2f42;
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 60px rgba(59, 130, 246, 0.08);
+    .manual-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px;
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 40px;
+      grid-template-columns: 320px 1fr;
+      gap: 36px;
       align-items: center;
     }
-    
-    /* 3D Document Booklet Mockup */
-    .book-mockup-wrapper {
-      position: relative;
-      perspective: 1000px;
-      display: flex;
-      justify-content: center;
-    }
-    .book-mockup {
-      width: 280px;
-      height: 380px;
+
+    /* Field Handbook Card */
+    .handbook-card {
       background: #ffffff;
-      border-radius: 10px 14px 14px 10px;
-      box-shadow: 
-        -12px 0 0 -4px #d4d4d8,
-        -16px 0 0 -8px #a1a1aa,
-        18px 20px 40px rgba(0, 0, 0, 0.7),
-        0 0 25px rgba(59, 130, 246, 0.2);
-      border: 1px solid #e4e4e7;
+      color: #111215;
+      border-radius: 8px;
       padding: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      color: #18181b;
-      position: relative;
-      transform: rotateY(-6deg) rotateX(2deg);
-      transition: transform 0.3s ease;
+      min-height: 360px;
+      border: 1px solid #d4d4d8;
     }
-    .book-mockup:hover {
-      transform: rotateY(-2deg) rotateX(0deg) scale(1.02);
-    }
-    .book-mockup-spine {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 14px;
-      background: linear-gradient(90deg, #090a0f 0%, #1e293b 80%, #ffffff 100%);
-      border-radius: 10px 0 0 10px;
-    }
-    .book-cover-top {
-      padding-left: 6px;
-    }
-    .book-badge {
-      display: inline-block;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      color: #1d4ed8;
-      font-size: 0.68rem;
+    .handbook-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .book-title {
-      font-size: 1.45rem;
-      font-weight: 800;
-      line-height: 1.2;
-      color: #09090b;
-      margin-bottom: 6px;
-    }
-    .book-subtitle {
-      font-size: 0.78rem;
       color: #52525b;
-      line-height: 1.4;
+      border-bottom: 1px solid #e4e4e7;
+      padding-bottom: 8px;
     }
-    .book-cover-diagram {
-      background: #0f172a;
+    .handbook-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 16px 0 6px;
+      color: #090a0d;
+      letter-spacing: -0.5px;
+    }
+    .handbook-subtitle {
+      font-size: 0.82rem;
+      color: #52525b;
+      line-height: 1.45;
+    }
+    .handbook-specs {
+      background: #f4f4f5;
+      border: 1px solid #e4e4e7;
       border-radius: 6px;
       padding: 10px;
-      color: #ffffff;
-      text-align: center;
-      margin: 12px 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #27272a;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 16px 0;
     }
-    .book-cover-diagram svg {
-      width: 100%;
-      height: 80px;
-    }
-    .book-cover-footer {
-      padding-left: 6px;
-      border-top: 1px solid #f4f4f5;
+    .handbook-footer {
+      border-top: 1px solid #e4e4e7;
       padding-top: 10px;
       display: flex;
       justify-content: space-between;
-      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
       color: #71717a;
-      font-weight: 600;
     }
 
-    /* Documentation Right Column */
-    .docs-info-col h2 {
-      font-size: 2.2rem;
+    /* Manual Info Column */
+    .manual-details h3 {
+      font-size: 1.85rem;
       font-weight: 800;
-      letter-spacing: -0.8px;
-      margin-bottom: 12px;
-      background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.6px;
+      color: #ffffff;
+      margin-bottom: 10px;
     }
-    .docs-info-lead {
+    .manual-lead {
       color: var(--text-muted);
-      font-size: 1.05rem;
-      margin-bottom: 24px;
+      font-size: 1rem;
       line-height: 1.55;
+      margin-bottom: 22px;
     }
-    .doc-spec-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-    .spec-pill {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #cbd5e1;
-    }
-    
-    .doc-chapters-grid {
+    .index-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 28px;
+      gap: 10px;
+      margin-bottom: 24px;
     }
-    .chapter-card {
-      background: #171924;
+    .index-item {
+      background: #111218;
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 14px;
+      border-radius: 6px;
+      padding: 10px 12px;
       display: flex;
       gap: 10px;
       align-items: flex-start;
-      transition: border-color 0.15s ease;
     }
-    .chapter-card:hover {
-      border-color: #3b82f6;
+    .index-num {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--amber);
+      padding-top: 1px;
     }
-    .chapter-num {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
-      font-size: 0.75rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .chapter-text strong {
+    .index-item strong {
       display: block;
-      font-size: 0.86rem;
+      font-size: 0.82rem;
       color: #f1f5f9;
       margin-bottom: 2px;
     }
-    .chapter-text span {
-      font-size: 0.75rem;
+    .index-item span {
+      font-size: 0.74rem;
       color: var(--text-dim);
-      line-height: 1.35;
-      display: block;
     }
 
-    .docs-action-bar {
+    .manual-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
     }
-    .btn-read-online {
+    .btn-manual-primary {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #2563eb;
-      color: #ffffff;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      background: #ffffff;
+      color: #090a0d;
+      padding: 11px 20px;
+      border-radius: 6px;
+      font-size: 0.9rem;
       font-weight: 700;
       text-decoration: none;
-      box-shadow: 0 4px 16px var(--primary-glow);
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
     }
-    .btn-read-online:hover {
-      background: #1d4ed8;
-      transform: translateY(-1px);
+    .btn-manual-primary:hover {
+      background: #e4e4e7;
     }
-    .btn-download-pdf {
+    .btn-manual-sec {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
-      color: #f1f5f9;
-      padding: 12px 22px;
-      border-radius: 10px;
-      font-size: 0.95rem;
+      color: #e4e4e7;
+      padding: 11px 18px;
+      border-radius: 6px;
+      font-size: 0.9rem;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.2s ease;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .btn-download-pdf:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.25);
+    .btn-manual-sec:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    /* Modal for In-Page Guide Reader */
-    .guide-modal-overlay {
+    /* Modal Reader */
+    .reader-modal {
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      z-index: 999;
+      background: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
       justify-content: center;
       align-items: center;
       padding: 24px;
     }
-    .guide-modal-overlay.open {
+    .reader-modal.open {
       display: flex;
     }
-    .guide-modal-container {
+    .reader-box {
       width: 100%;
-      max-width: 1050px;
+      max-width: 1000px;
       height: 90vh;
-      background: #0d0e14;
+      background: #0e0f14;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
     }
-    .guide-modal-header {
-      padding: 14px 20px;
-      background: #151620;
+    .reader-bar {
+      padding: 12px 18px;
+      background: #14151b;
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 0.86rem;
     }
-    .modal-close-btn {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      font-size: 1.5rem;
-      cursor: pointer;
-      line-height: 1;
-    }
-    .modal-close-btn:hover {
-      color: #ffffff;
-    }
-    .guide-iframe {
+    .reader-iframe {
       width: 100%;
       flex: 1;
       border: none;
-      background: #090a0f;
+      background: #0e0f14;
     }
 
     /* ==========================================================================
-       Features Bento Grid
+       Features & Architecture (Precision Matrix)
        ========================================================================== */
-    .section-title {
-      text-align: center;
-      margin-bottom: 48px;
+    .section-heading {
+      margin-bottom: 36px;
     }
-    .section-title h2 {
-      font-size: 2.3rem;
+    .section-heading h2 {
+      font-size: 2rem;
       font-weight: 800;
-      letter-spacing: -0.9px;
-      margin-bottom: 10px;
+      letter-spacing: -0.7px;
       color: #ffffff;
+      margin-bottom: 6px;
     }
-    .section-title p {
+    .section-heading p {
       color: var(--text-muted);
-      font-size: 1.05rem;
-      max-width: 650px;
-      margin: 0 auto;
+      font-size: 0.98rem;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-      gap: 22px;
-      margin-bottom: 90px;
-    }
-    .feature-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 28px;
-      position: relative;
-      transition: all 0.2s ease;
-    }
-    .feature-card:hover {
-      border-color: #3b425e;
-      background: var(--bg-card-hover);
-      transform: translateY(-2px);
-    }
-    .feature-icon-wrapper {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.35rem;
-      margin-bottom: 16px;
-      background: rgba(59, 130, 246, 0.12);
-      border: 1px solid rgba(59, 130, 246, 0.25);
-      color: #60a5fa;
-    }
-    .feature-card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
-    .feature-card p {
-      color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.6;
-    }
-
-    /* ==========================================================================
-       Downloads Section
-       ========================================================================== */
-    .downloads-grid {
+    .matrix-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 22px;
-      margin-bottom: 90px;
+      gap: 16px;
+      margin-bottom: 80px;
     }
-    .download-card {
-      background: var(--bg-card);
+    .matrix-card {
+      background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 26px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.2s ease;
+      border-radius: 8px;
+      padding: 24px;
+      transition: border-color 0.15s ease;
     }
-    .download-card:hover {
-      border-color: #3f4765;
-      transform: translateY(-2px);
+    .matrix-card:hover {
+      border-color: #3b4052;
     }
-    .download-card.highlighted {
-      border-color: #3b82f6;
-      box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
-    }
-    .platform-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .matrix-num {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--amber);
       margin-bottom: 12px;
+      display: block;
     }
-    .platform-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.35rem;
-    }
-    .platform-title {
-      font-size: 1.25rem;
+    .matrix-card h3 {
+      font-size: 1.05rem;
       font-weight: 700;
       color: #ffffff;
+      margin-bottom: 8px;
     }
-    .platform-subtitle {
-      font-size: 0.8rem;
+    .matrix-card p {
       color: var(--text-muted);
-    }
-    .platform-desc {
       font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-bottom: 20px;
       line-height: 1.55;
     }
-    .card-files {
+
+    /* ==========================================================================
+       Downloads Grid
+       ========================================================================== */
+    .downloads-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-bottom: 80px;
+    }
+    .dl-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      justify-content: space-between;
+      transition: border-color 0.15s ease;
     }
-    .file-btn {
+    .dl-card:hover {
+      border-color: #3b4052;
+    }
+    .dl-card.highlight {
+      border-color: #3b82f6;
+    }
+    .dl-platform-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .dl-platform-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .dl-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .dl-btn {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 12px 16px;
-      border-radius: 9px;
-      color: #f1f5f9;
+      background: #111218;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 6px;
+      color: #e4e4e7;
       text-decoration: none;
-      font-size: 0.92rem;
+      font-size: 0.86rem;
       font-weight: 600;
-      transition: all 0.2s ease;
+      transition: all 0.12s ease;
     }
-    .file-btn:hover {
-      background: rgba(59, 130, 246, 0.16);
+    .dl-btn:hover {
+      background: #1a1c26;
       border-color: #3b82f6;
       color: #93c5fd;
     }
-    .file-ext {
-      font-size: 0.74rem;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 3px 8px;
-      border-radius: 5px;
-      color: var(--text-muted);
+    .dl-ext {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
     }
-
-    /* Command snippet copy box */
-    .cmd-box {
-      margin-top: 14px;
-      background: #090a0f;
+    .cli-note {
+      background: #090a0d;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 12px;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: #38bdf8;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-family: ui-monospace, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.78rem;
-      color: #38bdf8;
     }
-    .btn-copy {
+    .btn-copy-clip {
       background: transparent;
       border: none;
       color: var(--text-dim);
+      font-size: 0.76rem;
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: color 0.15s ease;
     }
-    .btn-copy:hover {
+    .btn-copy-clip:hover {
       color: #ffffff;
     }
 
-    /* FAQ Section */
-    .faq-section {
-      background: var(--bg-card);
+    /* FAQ Box */
+    .faq-panel {
+      background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 36px;
+      border-radius: 8px;
+      padding: 32px;
       margin-bottom: 80px;
     }
-    .faq-item {
-      margin-bottom: 24px;
+    .faq-row {
+      margin-bottom: 20px;
       padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .faq-item:last-child {
+    .faq-row:last-child {
       margin-bottom: 0;
       padding-bottom: 0;
       border-bottom: none;
     }
-    .faq-item h4 {
-      font-size: 1.1rem;
+    .faq-row h4 {
+      font-size: 0.98rem;
       font-weight: 700;
-      margin-bottom: 8px;
       color: #ffffff;
+      margin-bottom: 6px;
     }
-    .faq-item p {
+    .faq-row p {
+      font-size: 0.88rem;
       color: var(--text-muted);
-      font-size: 0.92rem;
-      line-height: 1.6;
+      line-height: 1.55;
     }
 
     /* Footer */
     footer {
       border-top: 1px solid var(--border-subtle);
-      padding: 50px 0 40px;
+      padding: 40px 0;
       color: var(--text-dim);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
     }
-    .footer-content {
+    .footer-flex {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
-    .footer-links {
+    .footer-nav {
       display: flex;
-      gap: 20px;
+      gap: 18px;
     }
-    .footer-links a {
+    .footer-nav a {
       color: var(--text-muted);
       text-decoration: none;
-      transition: color 0.15s ease;
     }
-    .footer-links a:hover {
+    .footer-nav a:hover {
       color: #ffffff;
     }
 
-    @media (max-width: 900px) {
-      h1 { font-size: 2.5rem; }
-      .studio-grid { grid-template-columns: 1fr; }
-      .docs-showcase-card { grid-template-columns: 1fr; }
-      .book-mockup-wrapper { margin-bottom: 24px; }
-      .screenview-grid { grid-template-columns: 1fr; }
-      .editor-view-container { grid-template-columns: 1fr; }
+    @media (max-width: 860px) {
+      h1 { font-size: 2.3rem; }
+      .studio-columns { grid-template-columns: 1fr; }
+      .manual-panel { grid-template-columns: 1fr; }
+      .alt-pane-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-
-  <div class="bg-canvas"></div>
 
   <div class="container">
     <!-- Navbar -->
@@ -1565,455 +1130,292 @@
         <a href="#" class="brand">
           <img src="assets/icon.svg" alt="Stagelite Logo" class="brand-icon">
           <span>Stagelite</span>
-          <span class="brand-tag">v1.0 Pro</span>
+          <span class="brand-version">v1.0</span>
         </a>
         <div class="nav-links">
-          <a href="#showcase">Studio Tour</a>
-          <a href="#guide-section">Operator Manual</a>
-          <a href="#features">Architecture</a>
+          <a href="#console">Studio</a>
+          <a href="#manual">Operator Manual</a>
+          <a href="#architecture">Architecture</a>
           <a href="#downloads">Downloads</a>
-          <a href="#install-notes">Setup Notes</a>
         </div>
-        <div class="nav-actions">
-          <a href="Stagelite_Operator_Guide.pdf" target="_blank" class="btn-nav-guide">
-            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
-            Manual (PDF)
-          </a>
-          <a href="#downloads" class="btn-nav-download">Download v1.0</a>
+        <div class="nav-cta">
+          <a href="Stagelite_Operator_Guide.pdf" target="_blank" class="btn-manual-link">Manual (PDF)</a>
+          <a href="#downloads" class="btn-get">Download</a>
         </div>
       </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-      <div class="badge-pill">
-        <span class="pulse-dot"></span>
-        <span id="version-badge">Stagelite v1.0 Production Release · Zero Dropped Frames</span>
+      <div class="status-tag">
+        <span class="tally-dot"></span>
+        <span>Stagelite v1.0 Production Edition · 60 FPS Locked</span>
       </div>
 
-      <h1>Rock-Solid Live Presentation<br>Built for the Modern Stage.</h1>
+      <h1>Live presentation software built for zero failure on stage.</h1>
 
       <p class="hero-lead">
-        Engineered for churches, worship teams, and broadcast studios. Features an isolated 60 FPS graphics engine, physical HDMI monitor verification, live lyric auto-splitting, and alpha-transparent OBS overlays.
+        Engineered for churches, worship leaders, and live auditoriums. Isolated audience render engine, physical HDMI screen verification, instant lyric auto-splitting, and alpha-transparent OBS overlays.
       </p>
 
-      <div class="cta-group">
-        <div class="cta-buttons">
-          <a id="hero-download-btn" href="#downloads" class="btn-hero-primary">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+      <div class="hero-actions">
+        <div class="btn-row">
+          <a id="hero-download-btn" href="#downloads" class="btn-hero-download">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             <span id="hero-download-text">Download Stagelite</span>
           </a>
-          <a href="#guide-section" class="btn-hero-secondary btn-hero-manual">
-            <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path></svg>
+          <a href="#manual" class="btn-hero-ghost">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path></svg>
             Operator Field Guide
           </a>
-          <a href="#downloads" class="btn-hero-secondary">
-            View All 3 OSes
+          <a href="#downloads" class="btn-hero-ghost">
+            All Platforms
           </a>
         </div>
-        <span id="hero-os-hint" class="os-hint-text">Detecting your system architecture...</span>
+        <span id="hero-os-hint" class="os-info-line">Detecting operating system...</span>
       </div>
 
-      <!-- Metric Strip -->
-      <div class="metric-strip">
-        <div class="metric-item">
-          <span class="metric-dot"></span>
-          <span>Latency: <strong>&lt; 0.8 ms</strong> input-to-photon</span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-dot" style="background: #10b981;"></span>
-          <span>Audience Loop: <strong>60.0 FPS Lock</strong></span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-dot" style="background: #a855f7;"></span>
-          <span>Footprint: <strong>&lt; 180 MB RAM</strong> idle</span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-dot" style="background: #f59e0b;"></span>
-          <span>Reliability: <strong>100% Offline</strong> (0 Telemetry)</span>
-        </div>
-        <div class="metric-item">
-          <span class="metric-dot" style="background: #06b6d4;"></span>
-          <span>Crash Safety: <strong>1-Click Instant Resume</strong></span>
-        </div>
+      <!-- Hardware Metric Strip -->
+      <div class="hardware-bar">
+        <div class="hw-metric">Latency: <strong>&lt; 0.8 ms</strong></div>
+        <div class="hw-metric">Loop: <strong>60.0 FPS Lock</strong></div>
+        <div class="hw-metric">Memory: <strong>&lt; 180 MB RAM</strong></div>
+        <div class="hw-metric">Telemetry: <strong>Zero / 100% Offline</strong></div>
+        <div class="hw-metric">Database: <strong>SQLite WAL Crash Recovery</strong></div>
       </div>
     </section>
 
     <!-- ========================================================================
-         Interactive Studio Console Showcase (High-Fidelity Representation)
+         The Live Console (Clean, Precision Architecture)
          ======================================================================== -->
-    <section id="showcase" class="showcase-wrapper">
-      <div class="showcase-header-nav">
-        <div>
-          <span style="font-size: 0.82rem; font-weight: 700; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.5px;">Interactive Studio Tour</span>
-          <h3 style="font-size: 1.35rem; font-weight: 700; color: #ffffff;">Unified Pro-Studio Live Environment</h3>
+    <section id="console" class="console-section">
+      <div class="console-header">
+        <div class="console-title-group">
+          <h2>Unified Studio Console</h2>
+          <span>All critical operations in one humane workspace. No modal hunting.</span>
         </div>
-        <div class="mode-tab-group">
-          <button class="mode-tab active" onclick="switchView('studio', this)">
+        <div class="tabs-bar">
+          <button class="tab-btn active" onclick="setConsoleTab('studio', this)">
             <span>Master Studio</span>
             <kbd>⌘1</kbd>
           </button>
-          <button class="mode-tab" onclick="switchView('screenview', this)">
-            <span>Screen View</span>
+          <button class="tab-btn" onclick="setConsoleTab('displays', this)">
+            <span>Displays</span>
             <kbd>⌘2</kbd>
           </button>
-          <button class="mode-tab" onclick="switchView('editor', this)">
-            <span>Slide Editor</span>
+          <button class="tab-btn" onclick="setConsoleTab('editor', this)">
+            <span>Editor</span>
             <kbd>⌘4</kbd>
           </button>
-          <button class="mode-tab" onclick="switchView('obs', this)">
-            <span>OBS Broadcast</span>
+          <button class="tab-btn" onclick="setConsoleTab('obs', this)">
+            <span>OBS Overlay</span>
           </button>
         </div>
       </div>
 
-      <div class="app-window">
-        <!-- macOS Studio Titlebar -->
-        <div class="app-titlebar">
-          <div class="window-controls">
-            <div class="w-dot w-red"></div>
-            <div class="w-dot w-yellow"></div>
-            <div class="w-dot w-green"></div>
-            <div class="window-title" style="margin-left: 10px;">
-              <span>Stagelite Master Console</span>
-              <span class="doc-badge">Sunday Morning Service 2026.slite</span>
-            </div>
+      <div class="console-window">
+        <!-- Top Titlebar -->
+        <div class="console-topbar">
+          <div class="console-traffic-lights">
+            <span class="light light-r"></span>
+            <span class="light light-y"></span>
+            <span class="light light-g"></span>
+            <span class="console-doc-name">Stagelite Studio — Sunday Service Rundown</span>
           </div>
-          <div class="window-telemetry">
-            <span class="on-air-pill">
-              <span class="dot"></span>
+          <div class="console-tally">
+            <span class="on-air-badge">
+              <span class="pip"></span>
               ON AIR
             </span>
-            <span style="color: #94a3b8;">AUDIENCE: 1920×1080 @ 60Hz (HDMI-1)</span>
-            <span class="render-metric">
-              <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-              60.0 FPS · 0.8ms
-            </span>
+            <span style="color: #94a3b8;">HDMI-1 1080p60</span>
+            <span style="color: #34d399;">60.0 FPS · 0.8ms</span>
           </div>
         </div>
 
-        <!-- VIEW 1: Master Studio (Active by Default) -->
-        <div id="view-studio" class="view-content-pane active">
-          <div class="studio-grid">
+        <!-- PANE 1: Master Studio -->
+        <div id="pane-studio" class="view-pane active">
+          <div class="studio-columns">
             
-            <!-- Column 1: Service Run-Sheet -->
-            <div class="col-rundown">
-              <div class="panel-header">
-                <span>1. Service Rundown</span>
-                <span style="font-size: 0.68rem; color: var(--text-dim);">5 Items</span>
+            <!-- Left: Playlist Rundown -->
+            <div class="col-left">
+              <div class="col-title">
+                <span>Service Rundown</span>
+                <span>5 Items</span>
               </div>
-              <div class="rundown-list">
-                <div class="rundown-item" onclick="selectRundown(1)">
-                  <span class="rundown-item-num">01</span>
-                  <div class="rundown-item-body">
-                    <div class="rundown-item-title">Welcome & Announcements</div>
-                    <div class="rundown-item-meta">
-                      <span class="tag-category tag-worship">Deck</span>
-                      <span>2 slides</span>
-                      <span>03:00</span>
-                    </div>
+              <div class="playlist-items">
+                <div class="playlist-row" onclick="pickShow(1)">
+                  <div>
+                    <span style="color: var(--text-dim); margin-right: 4px;">1</span>
+                    <strong>Welcome & Intro</strong>
                   </div>
+                  <span class="playlist-count">2 slides</span>
                 </div>
-
-                <div class="rundown-item active" onclick="selectRundown(2)">
-                  <span class="rundown-item-num" style="color: #60a5fa;">02</span>
-                  <div class="rundown-item-body">
-                    <div class="rundown-item-title" style="color: #ffffff; font-weight: 700;">▶ Amazing Grace</div>
-                    <div class="rundown-item-meta">
-                      <span class="tag-category tag-worship">Hymn</span>
-                      <span style="color: #60a5fa; font-weight: 600;">4 slides (LIVE)</span>
-                      <span>04:30</span>
-                    </div>
+                <div class="playlist-row active" onclick="pickShow(2)">
+                  <div>
+                    <span style="color: #60a5fa; margin-right: 4px;">▶</span>
+                    <strong>Amazing Grace</strong>
                   </div>
+                  <span class="playlist-count" style="color: #60a5fa;">4 slides</span>
                 </div>
-
-                <div class="rundown-item" onclick="selectRundown(3)">
-                  <span class="rundown-item-num">03</span>
-                  <div class="rundown-item-body">
-                    <div class="rundown-item-title">Scripture: Psalm 23 (ESV)</div>
-                    <div class="rundown-item-meta">
-                      <span class="tag-category tag-scripture">Scripture</span>
-                      <span>3 slides</span>
-                      <span>02:00</span>
-                    </div>
+                <div class="playlist-row" onclick="pickShow(3)">
+                  <div>
+                    <span style="color: var(--text-dim); margin-right: 4px;">3</span>
+                    <strong>Psalm 23 (ESV)</strong>
                   </div>
+                  <span class="playlist-count">3 slides</span>
                 </div>
-
-                <div class="rundown-item" onclick="selectRundown(4)">
-                  <span class="rundown-item-num">04</span>
-                  <div class="rundown-item-body">
-                    <div class="rundown-item-title">Sermon: The Shepherd's Care</div>
-                    <div class="rundown-item-meta">
-                      <span class="tag-category tag-sermon">Teaching</span>
-                      <span>8 slides</span>
-                      <span>25:00</span>
-                    </div>
+                <div class="playlist-row" onclick="pickShow(4)">
+                  <div>
+                    <span style="color: var(--text-dim); margin-right: 4px;">4</span>
+                    <strong>Sermon Teaching</strong>
                   </div>
+                  <span class="playlist-count">8 slides</span>
                 </div>
-
-                <div class="rundown-item" onclick="selectRundown(5)">
-                  <span class="rundown-item-num">05</span>
-                  <div class="rundown-item-body">
-                    <div class="rundown-item-title">Closing: How Great Thou Art</div>
-                    <div class="rundown-item-meta">
-                      <span class="tag-category tag-worship">Hymn</span>
-                      <span>4 slides</span>
-                      <span>05:00</span>
-                    </div>
+                <div class="playlist-row" onclick="pickShow(5)">
+                  <div>
+                    <span style="color: var(--text-dim); margin-right: 4px;">5</span>
+                    <strong>Benediction</strong>
                   </div>
+                  <span class="playlist-count">2 slides</span>
                 </div>
               </div>
-              <div class="rundown-footer">
-                <span class="rec-badge">
-                  <span class="dot" style="width: 7px; height: 7px; background: #ef4444; border-radius: 50%;"></span>
-                  REC 00:14:22
-                </span>
-                <span style="color: #64748b; font-size: 0.74rem;">SQLite Synced</span>
+              <div style="margin-top: auto; padding: 10px 14px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 0.72rem; color: #ef4444; display: flex; align-items: center; gap: 6px;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: #ef4444;"></span>
+                REC 00:14:22 · SQLite Synced
               </div>
             </div>
 
-            <!-- Column 2: Center Presentation Matrix -->
-            <div class="col-stage">
-              <div class="stage-canvas-wrapper">
-                <div class="stage-cinema-screen">
-                  <span class="stage-live-tag" id="cinema-tag">VERSE 1 OF 4 · ON AIR</span>
-                  <div class="stage-screen-lyrics" id="cinema-lyrics">
-                    Amazing grace! How sweet the sound
-                    <span class="sub-line">That saved a wretch like me!</span>
-                  </div>
+            <!-- Center: Stage Cinema & Deck -->
+            <div class="col-center">
+              <div class="cinema-artboard">
+                <span class="cinema-chip" id="c-chip">VERSE 1 OF 4</span>
+                <div class="cinema-text" id="c-text">
+                  Amazing grace! How sweet the sound
+                  <span>That saved a wretch like me!</span>
                 </div>
               </div>
 
-              <!-- Slide Thumbnails Matrix -->
-              <div class="slide-matrix-area">
-                <div class="matrix-toolbar">
-                  <span>SLIDE MATRIX: Amazing Grace (Click any slide to transition)</span>
-                  <span style="color: #38bdf8;">Transition: 350ms Dissolve</span>
+              <div class="deck-area">
+                <div class="deck-header">
+                  <span>Slide Deck (Click to project live)</span>
+                  <span style="color: #38bdf8;">350ms Smooth Dissolve</span>
                 </div>
-                <div class="slide-grid">
-                  <!-- Verse 1 (Active) -->
-                  <div class="slide-card active-live" id="slide-thumb-1" onclick="selectSlide(1)">
-                    <div class="slide-card-header">
-                      <span class="slide-card-badge">Verse 1</span>
-                      <span class="slide-tally-pill">LIVE</span>
-                    </div>
-                    <div class="slide-card-body">
-                      Amazing grace! How sweet the sound that saved a wretch like me!
-                    </div>
+                <div class="deck-grid">
+                  <div class="thumb-card active" id="th-1" onclick="jumpSlide(1)">
+                    <span class="thumb-tag">Verse 1 · LIVE</span>
+                    <div class="thumb-preview-text">Amazing grace! How sweet the sound...</div>
                   </div>
-
-                  <!-- Verse 2 -->
-                  <div class="slide-card" id="slide-thumb-2" onclick="selectSlide(2)">
-                    <div class="slide-card-header">
-                      <span class="slide-card-badge">Verse 2</span>
-                    </div>
-                    <div class="slide-card-body">
-                      'Twas grace that taught my heart to fear, and grace my fears relieved.
-                    </div>
+                  <div class="thumb-card" id="th-2" onclick="jumpSlide(2)">
+                    <span class="thumb-tag">Verse 2</span>
+                    <div class="thumb-preview-text">'Twas grace that taught my heart to fear...</div>
                   </div>
-
-                  <!-- Verse 3 -->
-                  <div class="slide-card" id="slide-thumb-3" onclick="selectSlide(3)">
-                    <div class="slide-card-header">
-                      <span class="slide-card-badge">Verse 3</span>
-                    </div>
-                    <div class="slide-card-body">
-                      Through many dangers, toils and snares, I have already come.
-                    </div>
+                  <div class="thumb-card" id="th-3" onclick="jumpSlide(3)">
+                    <span class="thumb-tag">Verse 3</span>
+                    <div class="thumb-preview-text">Through many dangers, toils, and snares...</div>
                   </div>
-
-                  <!-- Verse 4 -->
-                  <div class="slide-card" id="slide-thumb-4" onclick="selectSlide(4)">
-                    <div class="slide-card-header">
-                      <span class="slide-card-badge">Verse 4</span>
-                    </div>
-                    <div class="slide-card-body">
-                      When we've been there ten thousand years, bright shining as the sun!
-                    </div>
+                  <div class="thumb-card" id="th-4" onclick="jumpSlide(4)">
+                    <span class="thumb-tag">Verse 4</span>
+                    <div class="thumb-preview-text">When we've been there ten thousand years...</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Column 3: Tactical Transport & Live Output -->
-            <div class="col-tactical">
-              <!-- Live Mirror Box -->
-              <div class="audience-mirror-box">
-                <div class="mirror-label">
-                  <span style="display: inline-block; width: 6px; height: 6px; background: #ef4444; border-radius: 50%;"></span>
-                  AUDIENCE SCREEN MIRROR (1080p60)
-                </div>
-                <div class="mirror-text" id="mirror-lyrics-text">
+            <!-- Right: Tactical Mirror & Transport -->
+            <div class="col-right">
+              <div class="screen-mirror">
+                <span class="mirror-badge">PROJECTOR 1080P</span>
+                <div class="mirror-lyrics-label" id="m-text">
                   Amazing grace! How sweet the sound<br>
-                  <span style="font-size: 0.74rem; color: #94a3b8;">That saved a wretch like me!</span>
+                  <span style="font-size: 0.7rem; color: #94a3b8;">That saved a wretch like me!</span>
                 </div>
               </div>
 
               <!-- Transport Buttons -->
-              <div class="transport-btn-grid">
-                <button class="btn-t-nav" onclick="stepSlide(-1)">
-                  <span>◀ Prev</span>
-                  <span style="font-size: 0.7rem; color: #64748b;">(←)</span>
-                </button>
-                <button class="btn-t-primary" onclick="stepSlide(1)">
-                  <span>Next ▶</span>
-                  <span style="font-size: 0.7rem; color: #93c5fd;">(Space)</span>
-                </button>
-                <button class="btn-t-panic" onclick="toggleBlank()">
-                  <span>Blank (B)</span>
-                </button>
-                <button class="btn-t-clear" onclick="toggleClear()">
-                  <span>Clear (Esc)</span>
-                </button>
+              <div class="controls-grid">
+                <button class="btn-ctl" onclick="navSlide(-1)">◀ Prev</button>
+                <button class="btn-ctl btn-ctl-main" onclick="navSlide(1)">Next ▶</button>
+                <button class="btn-ctl btn-ctl-panic" onclick="toggleBlank()">Blank (B)</button>
+                <button class="btn-ctl" onclick="toggleClear()">Clear (Esc)</button>
               </div>
 
-              <!-- Stage Confidence Display Preview -->
-              <div class="tactical-box">
-                <div class="tactical-box-header">
+              <!-- Confidence preview -->
+              <div class="telemetry-card">
+                <div class="telemetry-card-hdr">
                   <span>Confidence Monitor</span>
-                  <span style="color: #10b981;">SYNCED</span>
+                  <span style="color: #34d399;">Active</span>
                 </div>
-                <div class="confidence-row" id="confidence-current">
+                <div style="font-size: 0.78rem; color: #e4e4e7; margin-bottom: 2px;" id="conf-now">
                   <strong>Now:</strong> Amazing grace! How sweet...
                 </div>
-                <div class="confidence-next" id="confidence-next">
-                  <strong>Next:</strong> 'Twas grace that taught my heart...
+                <div style="font-size: 0.74rem; color: var(--text-dim);" id="conf-next">
+                  <strong>Next:</strong> 'Twas grace that taught...
                 </div>
               </div>
 
-              <!-- Countdown & Nursery Alert -->
-              <div class="tactical-box">
-                <div class="tactical-box-header">
-                  <span>Sermon Countdown</span>
-                  <span style="color: #fbbf24;">RUNNING</span>
+              <!-- Countdown -->
+              <div class="telemetry-card">
+                <div class="telemetry-card-hdr">
+                  <span>Speaker Countdown</span>
+                  <span style="color: var(--amber);">Running</span>
                 </div>
-                <div class="timer-display">04:32 REMAINING</div>
-                <button style="margin-top: 8px; width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: #cbd5e1; padding: 6px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">
-                  + Flash Nursery Alert #429
-                </button>
+                <div class="telemetry-countdown">04:32 REMAINING</div>
               </div>
-
             </div>
 
           </div>
         </div>
 
-        <!-- VIEW 2: Screen View Verification -->
-        <div id="view-screenview" class="view-content-pane">
-          <div class="screenview-grid">
-            <div class="hardware-display-card">
-              <div class="hw-card-top">
-                <div>
-                  <div class="hw-name">Main Sanctuary Projector</div>
-                  <div class="hw-spec">HDMI-1 · 1920×1080 @ 60.0 Hz</div>
-                </div>
-                <span class="hw-tally-badge hw-badge-live">LIVE OUTPUT</span>
-              </div>
-              <div class="hw-feed">
-                <div style="font-size: 0.95rem; font-weight: 700; color: #ffffff;">Amazing grace! How sweet the sound</div>
-                <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">Direct ScreenCaptureKit verification</div>
+        <!-- PANE 2: Displays Verification -->
+        <div id="pane-displays" class="view-pane">
+          <div class="alt-pane-grid">
+            <div class="alt-card">
+              <h4>Sanctuary Projector</h4>
+              <p>HDMI-1 · 1920×1080 @ 60 Hz</p>
+              <div style="margin-top: 12px; height: 100px; background: #000; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #fff;">
+                ● Live 60 FPS Loop
               </div>
             </div>
-
-            <div class="hardware-display-card">
-              <div class="hw-card-top">
-                <div>
-                  <div class="hw-name">Stage Confidence Wedge</div>
-                  <div class="hw-spec">DisplayPort-1 · 1920×1080 @ 60.0 Hz</div>
-                </div>
-                <span class="hw-tally-badge hw-badge-stage">STAGE DISPLAY</span>
-              </div>
-              <div class="hw-feed" style="background: #000000;">
-                <div style="font-size: 1.6rem; font-weight: 800; color: #fbbf24; font-family: monospace;">10:42 AM</div>
-                <div style="font-size: 0.85rem; color: #ffffff; margin-top: 4px;">Amazing grace! How sweet...</div>
+            <div class="alt-card">
+              <h4>Stage Confidence Wedge</h4>
+              <p>DisplayPort-1 · 1920×1080 @ 60 Hz</p>
+              <div style="margin-top: 12px; height: 100px; background: #000; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: monospace; font-size: 1.2rem; color: #fbbf24;">
+                10:42 AM
               </div>
             </div>
-
-            <div class="hardware-display-card">
-              <div class="hw-card-top">
-                <div>
-                  <div class="hw-name">Foyer & Nursery Feed</div>
-                  <div class="hw-spec">HDMI-2 · 1920×1080 @ 60.0 Hz</div>
-                </div>
-                <span class="hw-tally-badge hw-badge-foyer">OVERFLOW TV</span>
-              </div>
-              <div class="hw-feed">
-                <div style="font-size: 0.85rem; color: #cbd5e1;">Live Service Stream + Alert Ticker</div>
+            <div class="alt-card">
+              <h4>Foyer / Overflow TV</h4>
+              <p>HDMI-2 · 1920×1080 @ 60 Hz</p>
+              <div style="margin-top: 12px; height: 100px; background: #000; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #94a3b8;">
+                Alert Ticker Stream
               </div>
             </div>
           </div>
         </div>
 
-        <!-- VIEW 3: Slide Editor -->
-        <div id="view-editor" class="view-content-pane">
-          <div class="editor-view-container">
-            <div class="editor-toolbar-col">
-              <div style="font-size: 0.78rem; font-weight: 700; color: #60a5fa; margin-bottom: 12px; text-transform: uppercase;">
-                Formatting & Typography
-              </div>
-              <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem;">
-                <div>Font: <strong>Inter Display</strong></div>
-                <div>Size: <strong>64 pt</strong> (Auto-Fit Active)</div>
-                <div>Alignment: <strong>Center / Middle</strong></div>
-                <div style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px;">
-                  <button style="width: 100%; padding: 8px; border-radius: 6px; background: #1e2230; border: 1px solid var(--border); color: #fff; font-size: 0.8rem; cursor: pointer; margin-bottom: 6px;">
-                    Split Long Text (2 Lines)
-                  </button>
-                  <button style="width: 100%; padding: 8px; border-radius: 6px; background: #1e2230; border: 1px solid var(--border); color: #fff; font-size: 0.8rem; cursor: pointer;">
-                    Auto Verse Detector
-                  </button>
-                </div>
-              </div>
+        <!-- PANE 3: Slide Editor -->
+        <div id="pane-editor" class="view-pane">
+          <div style="padding: 24px; text-align: center;">
+            <div style="max-width: 540px; margin: 0 auto; aspect-ratio: 16/9; background: #12131a; border: 1px solid #3b82f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 700; color: #ffffff;">
+              Amazing grace! How sweet the sound<br>That saved a wretch like me!
             </div>
-
-            <div class="editor-canvas-center">
-              <div class="editor-sheet">
-                <div style="font-size: 1.4rem; font-weight: 700; color: #ffffff;">
-                  Amazing grace! How sweet the sound<br>
-                  That saved a wretch like me!
-                </div>
-              </div>
-              <div style="margin-top: 16px; font-size: 0.82rem; color: #10b981; display: flex; align-items: center; gap: 6px;">
-                <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                Grammar & Typo Audit: Passed (0 issues found)
-              </div>
-            </div>
-
-            <div class="editor-meta-col">
-              <div style="font-size: 0.78rem; font-weight: 700; color: #60a5fa; margin-bottom: 12px; text-transform: uppercase;">
-                Publish Controls
-              </div>
-              <button style="width: 100%; padding: 10px; border-radius: 8px; background: #2563eb; border: none; color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; margin-bottom: 8px;">
-                Publish Live (⌘↩)
-              </button>
-              <button style="width: 100%; padding: 10px; border-radius: 8px; background: #1a1d29; border: 1px solid var(--border); color: #cbd5e1; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
-                Save Draft Deck
-              </button>
+            <div style="margin-top: 16px; font-family: var(--font-mono); font-size: 0.8rem; color: #34d399;">
+              ✓ Grammar & Typo Audit: Passed (0 issues found) · Auto-Fit Active
             </div>
           </div>
         </div>
 
-        <!-- VIEW 4: OBS Broadcast Overlays -->
-        <div id="view-obs" class="view-content-pane">
-          <div class="obs-view-container">
-            <div class="obs-stream-mockup">
-              <div class="obs-speaker-cam">🎥 LIVE CAMERA FEED</div>
-              <div class="obs-lower-third">
-                <div style="font-size: 0.74rem; font-weight: 700; color: #60a5fa; text-transform: uppercase; margin-bottom: 2px;">
-                  Sunday Service Stream
-                </div>
-                <div style="font-size: 1.1rem; font-weight: 700; color: #ffffff;">
-                  Amazing grace! How sweet the sound that saved a wretch like me!
-                </div>
-              </div>
-              <div class="obs-ticker-bar">
-                <span style="color: #ef4444; font-weight: 700;">LIVE TICKER:</span>
-                <span>Welcome to our live stream · Nursery care available in Room 102 · Download the bulletin at church.org</span>
+        <!-- PANE 4: OBS Overlay -->
+        <div id="pane-obs" class="view-pane">
+          <div style="padding: 24px;">
+            <div style="height: 180px; background: #020617; border: 1px dashed var(--border); border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px;">
+              <div style="background: rgba(15, 23, 42, 0.9); border-left: 4px solid #3b82f6; padding: 10px 14px; border-radius: 0 6px 6px 0; max-width: 500px;">
+                <div style="font-size: 0.72rem; color: #60a5fa; font-weight: 700;">SUNDAY LIVESTREAM LOWER-THIRD</div>
+                <div style="font-size: 0.95rem; color: #ffffff; font-weight: 600;">Amazing grace! How sweet the sound</div>
               </div>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; background: #12131c; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--border);">
-              <span style="font-size: 0.85rem; color: #cbd5e1;">Transparent OBS Browser Source URL: <code style="color: #38bdf8;">http://localhost:5174/overlay.html</code></span>
-              <button class="btn-copy" onclick="copyText('http://localhost:5174/overlay.html', this)">Copy URL</button>
+            <div style="margin-top: 12px; font-family: var(--font-mono); font-size: 0.76rem; color: #8e92a0;">
+              OBS Browser Source URL: <code style="color: #38bdf8;">http://localhost:5174/overlay.html</code>
             </div>
           </div>
         </div>
@@ -2022,120 +1424,98 @@
     </section>
 
     <!-- ========================================================================
-         Official Documentation & Operator Field Guide Showcase (Dedicated)
+         Operator Field Guide & Documentation Section
+         Clean, authentic, dignified handbook style. No tilted 3D mockup.
          ======================================================================== -->
-    <section id="guide-section" class="docs-showcase-section">
-      <div class="docs-showcase-card">
+    <section id="manual" class="manual-section">
+      <div class="manual-panel">
         
-        <!-- Left: 3D Document Mockup -->
-        <div class="book-mockup-wrapper">
-          <div class="book-mockup">
-            <div class="book-mockup-spine"></div>
-            <div class="book-cover-top">
-              <span class="book-badge">Official Manual</span>
-              <div class="book-title">Stagelite Operator Guide</div>
-              <div class="book-subtitle">Field-tested instructions for church AV desks, conference operators, and volunteers.</div>
+        <!-- Field Handbook Card -->
+        <div class="handbook-card">
+          <div>
+            <div class="handbook-topbar">
+              <span>OFFICIAL MANUAL</span>
+              <span>v1.0 RELEASE</span>
             </div>
+            <div class="handbook-title">Stagelite Operator Guide</div>
+            <div class="handbook-subtitle">Field-tested reference handbook for church sound booths, conference desks, and live event volunteers.</div>
+          </div>
 
-            <div class="book-cover-diagram">
-              <svg viewBox="0 0 200 70">
-                <rect x="5" y="10" width="55" height="40" rx="4" fill="#1e293b" stroke="#3b82f6"/>
-                <text x="32" y="32" fill="#38bdf8" font-size="6" font-weight="700" text-anchor="middle">STAGELITE</text>
-                <path d="M 60 30 L 95 18" stroke="#3b82f6" stroke-width="1.5" fill="none"/>
-                <path d="M 60 30 L 95 30" stroke="#10b981" stroke-width="1.5" fill="none"/>
-                <path d="M 60 30 L 95 42" stroke="#a855f7" stroke-width="1.5" fill="none"/>
-                <rect x="95" y="10" width="95" height="15" rx="3" fill="#1e3a8a"/>
-                <text x="142" y="20" fill="#ffffff" font-size="5.5" font-weight="700" text-anchor="middle">Audience Screen (60 FPS)</text>
-                <rect x="95" y="27" width="95" height="15" rx="3" fill="#064e3b"/>
-                <text x="142" y="37" fill="#ffffff" font-size="5.5" font-weight="700" text-anchor="middle">Stage Confidence Wedge</text>
-                <rect x="95" y="44" width="95" height="15" rx="3" fill="#581c87"/>
-                <text x="142" y="54" fill="#ffffff" font-size="5.5" font-weight="700" text-anchor="middle">OBS Studio Broadcast</text>
-              </svg>
-            </div>
+          <div class="handbook-specs">
+            <div>• Format: 8-Page A4 Printable Document</div>
+            <div>• Time to learn: 3 Minutes</div>
+            <div>• Emergency cheatsheet: Included</div>
+            <div>• OBS streaming guide: Included</div>
+          </div>
 
-            <div class="book-cover-footer">
-              <span>Stagelite Documentation Suite</span>
-              <span>v1.0 Release</span>
-            </div>
+          <div class="handbook-footer">
+            <span>Stagelite Documentation Suite</span>
+            <span>Published Nov 2026</span>
           </div>
         </div>
 
-        <!-- Right: Guide Overview & Actions -->
-        <div class="docs-info-col">
-          <span style="font-size: 0.82rem; font-weight: 700; color: #60a5fa; text-transform: uppercase; letter-spacing: 0.6px;">Complete Documentation Suite</span>
-          <h2>The Stagelite Operator & User Manual</h2>
-          <p class="docs-info-lead">
-            Written specifically for non-technical volunteers, worship leaders, and professional AV engineers. No fluff, no jargon — just clear, step-by-step instructions.
+        <!-- Documentation Information -->
+        <div class="manual-details">
+          <h3>The Complete Operator Manual</h3>
+          <p class="manual-lead">
+            Written specifically for non-technical volunteers, sound booth staff, and live technicians. Every critical control, hotkey, and panic action explained without jargon.
           </p>
 
-          <div class="doc-spec-pills">
-            <span class="spec-pill">📄 8-Page A4 Printable Booklet</span>
-            <span class="spec-pill">⏱️ 3-Minute Volunteer Quick Start</span>
-            <span class="spec-pill">⌨️ Emergency Hotkey Reference Card</span>
-            <span class="spec-pill">📡 OBS Studio Overlay Configuration</span>
-            <span class="spec-pill">🛡️ Hardware Crash Recovery Protocol</span>
-          </div>
-
-          <div class="doc-chapters-grid">
-            <div class="chapter-card">
-              <div class="chapter-num">1</div>
-              <div class="chapter-text">
-                <strong>Quick Start Guide</strong>
-                <span>Four steps to take if arriving at the AV desk 10 mins before service.</span>
+          <div class="index-grid">
+            <div class="index-item">
+              <span class="index-num">01</span>
+              <div>
+                <strong>3-Minute Quick Start</strong>
+                <span>Four steps when arriving at the AV desk 10 mins before service.</span>
               </div>
             </div>
-
-            <div class="chapter-card">
-              <div class="chapter-num">2</div>
-              <div class="chapter-text">
-                <strong>Master Studio Tour</strong>
-                <span>The 3 working zones decoded: Rundown, Slide Matrix, and Tactical Transport.</span>
+            <div class="index-item">
+              <span class="index-num">02</span>
+              <div>
+                <strong>Studio Interface Tour</strong>
+                <span>Rundown, visual slide matrix, and tactical transport.</span>
               </div>
             </div>
-
-            <div class="chapter-card">
-              <div class="chapter-num">3</div>
-              <div class="chapter-text">
-                <strong>The 5 Dashboard Modes</strong>
-                <span>Studio, Displays (Hardware Verification), Planning, Editor, and Presenter.</span>
+            <div class="index-item">
+              <span class="index-num">03</span>
+              <div>
+                <strong>5 Dashboard Modes</strong>
+                <span>Master Studio, Displays, Planning, Editor, and Presenter.</span>
               </div>
             </div>
-
-            <div class="chapter-card">
-              <div class="chapter-num">4</div>
-              <div class="chapter-text">
-                <strong>Slide & Lyric Mastery</strong>
-                <span>Auto-splitter, grammar check, chord notation, and live edits.</span>
+            <div class="index-item">
+              <span class="index-num">04</span>
+              <div>
+                <strong>Slide & Lyric Editing</strong>
+                <span>Auto-splitter, live typo audit, and chord formatting.</span>
               </div>
             </div>
-
-            <div class="chapter-card">
-              <div class="chapter-num">5</div>
-              <div class="chapter-text">
-                <strong>OBS & Broadcast Overlays</strong>
-                <span>Transparent browser sources, lower thirds, and news tickers.</span>
+            <div class="index-item">
+              <span class="index-num">05</span>
+              <div>
+                <strong>OBS Transparent Stream</strong>
+                <span>Alpha-channel lower thirds and real-time news tickers.</span>
               </div>
             </div>
-
-            <div class="chapter-card">
-              <div class="chapter-num">6</div>
-              <div class="chapter-text">
-                <strong>Emergency & Panic Controls</strong>
-                <span>Instant blank to black, cable disconnects, and hotkey reference.</span>
+            <div class="index-item">
+              <span class="index-num">06</span>
+              <div>
+                <strong>Emergency Protocol</strong>
+                <span>Instant blanking, cable disconnects, and hotkeys.</span>
               </div>
             </div>
           </div>
 
-          <div class="docs-action-bar">
-            <a href="guide.html" target="_blank" class="btn-read-online">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-              Read Online (Interactive Web Manual)
+          <div class="manual-buttons">
+            <a href="guide.html" target="_blank" class="btn-manual-primary">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+              Read Online (Web Manual)
             </a>
-            <a href="Stagelite_Operator_Guide.pdf" target="_blank" class="btn-download-pdf">
-              <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
+            <a href="Stagelite_Operator_Guide.pdf" target="_blank" class="btn-manual-sec">
+              <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
               Download PDF (1.3 MB)
             </a>
-            <button onclick="openGuideModal()" class="btn-hero-secondary" style="padding: 12px 18px; font-size: 0.9rem; cursor: pointer;">
+            <button onclick="toggleReader(true)" class="btn-manual-sec">
               Preview in Window
             </button>
           </div>
@@ -2144,66 +1524,63 @@
       </div>
     </section>
 
-    <!-- In-Page Interactive Guide Modal -->
-    <div id="guide-modal" class="guide-modal-overlay">
-      <div class="guide-modal-container">
-        <div class="guide-modal-header">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="assets/icon.svg" width="24" height="24" style="border-radius: 4px;">
-            <strong style="color: #fff; font-size: 0.95rem;">Stagelite Operator Manual — Interactive Reader</strong>
-          </div>
-          <div style="display: flex; align-items: center; gap: 14px;">
-            <a href="Stagelite_Operator_Guide.pdf" target="_blank" style="color: #60a5fa; font-size: 0.85rem; text-decoration: none;">Download PDF</a>
-            <button class="modal-close-btn" onclick="closeGuideModal()">×</button>
+    <!-- Modal Reader Window -->
+    <div id="reader-modal" class="reader-modal">
+      <div class="reader-box">
+        <div class="reader-bar">
+          <strong style="color: #fff;">Stagelite Operator Manual & Field Guide</strong>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <a href="Stagelite_Operator_Guide.pdf" target="_blank" style="color: #60a5fa; text-decoration: none;">Download PDF</a>
+            <button onclick="toggleReader(false)" style="background: transparent; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer;">✕</button>
           </div>
         </div>
-        <iframe src="guide.html" class="guide-iframe" title="Stagelite Operator Guide"></iframe>
+        <iframe src="guide.html" class="reader-iframe" title="Operator Guide"></iframe>
       </div>
     </div>
 
     <!-- ========================================================================
-         Features Section (Engineered for Zero Failure)
+         Features Matrix (Precision Architecture)
          ======================================================================== -->
-    <section id="features">
-      <div class="section-title">
+    <section id="architecture">
+      <div class="section-heading">
         <h2>Engineered for Zero Failure</h2>
-        <p>Built with Rust and modern Svelte 5 runes for unbeatable reliability in live environments.</p>
+        <p>Built with Rust and modern Svelte 5 runes for absolute reliability under pressure.</p>
       </div>
 
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">⚡</div>
-          <h3>Isolated 60 FPS Render Loop</h3>
-          <p>The audience window runs in a dedicated thread. Heavy library imports, database queries, and slide edits never cause the projector to drop a single frame.</p>
+      <div class="matrix-grid">
+        <div class="matrix-card">
+          <span class="matrix-num">01 / GRAPHICS LOOP</span>
+          <h3>Isolated 60 FPS Engine</h3>
+          <p>The audience window runs in a dedicated thread. Heavy library imports, database queries, and slide edits never cause the projector to drop a frame.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">🖥️</div>
-          <h3>Physical Screen Verification</h3>
-          <p>Screen View mode uses native desktop capture (ScreenCaptureKit & DXGI) to mirror exactly what the physical projector or video wall is displaying directly on your operator desk.</p>
+        <div class="matrix-card">
+          <span class="matrix-num">02 / HARDWARE VERIFICATION</span>
+          <h3>Physical Screen Capture</h3>
+          <p>Screen View mode uses native desktop capture (ScreenCaptureKit & DXGI) to mirror exactly what the physical projector is showing right on your desk.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">✍️</div>
+        <div class="matrix-card">
+          <span class="matrix-num">03 / CONTENT TOOLS</span>
           <h3>Auto-Splitter & Grammar Check</h3>
-          <p>Paste long scripture chapters or songs and automatically split them into clean 2-line or 4-line slides. Built-in grammar audit catches typos before you go live.</p>
+          <p>Paste long scripture chapters or songs and automatically split them into 2-line or 4-line slides. Built-in grammar audit catches typos before you go live.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">📡</div>
-          <h3>Transparent OBS Broadcast Overlays</h3>
-          <p>Integrated broadcast web server provides alpha-transparent lower thirds, news tickers, and speaker cards directly to OBS Studio, vMix, or ATEM switchers.</p>
+        <div class="matrix-card">
+          <span class="matrix-num">04 / BROADCAST STREAM</span>
+          <h3>OBS Transparent Overlays</h3>
+          <p>Integrated broadcast web server provides alpha-transparent lower thirds, news tickers, and speaker cards directly to OBS Studio or vMix.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">⏱️</div>
+        <div class="matrix-card">
+          <span class="matrix-num">05 / STAGE MONITOR</span>
           <h3>Stage Confidence & Nursery Alerts</h3>
-          <p>Dedicated confidence monitors show high-contrast lyrics, clock, and countdown timers to the stage, with discreet nursery alert tickers for the auditorium.</p>
+          <p>Confidence monitors show high-contrast lyrics, clock, and countdown timers to the stage, with discreet nursery alert tickers for the auditorium.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon-wrapper">🛡️</div>
-          <h3>Offline-First & Instant Crash Recovery</h3>
+        <div class="matrix-card">
+          <span class="matrix-num">06 / RESILIENCE</span>
+          <h3>Offline-First & Crash Recovery</h3>
           <p>Zero internet required. All data is saved instantly to embedded SQLite WAL. If power is interrupted, 1-click resumes your exact slide in under 2 seconds.</p>
         </div>
       </div>
@@ -2213,136 +1590,111 @@
          Downloads Section
          ======================================================================== -->
     <section id="downloads">
-      <div class="section-title">
-        <h2>Download Stagelite for Your Platform</h2>
-        <p>Direct standalone installers and application packages with zero telemetry or tracking.</p>
+      <div class="section-heading">
+        <h2>Download Stagelite</h2>
+        <p>Direct standalone installers with zero telemetry, tracking, or cloud lock-in.</p>
       </div>
 
-      <div class="downloads-grid">
+      <div class="downloads-container">
         <!-- macOS -->
-        <div class="download-card" id="card-macos">
+        <div class="dl-card" id="card-macos">
           <div>
-            <div class="platform-header">
-              <div class="platform-icon">🍏</div>
-              <div>
-                <div class="platform-title">macOS</div>
-                <div class="platform-subtitle">macOS 12 Monterey or newer</div>
-              </div>
+            <div class="dl-platform-title">macOS</div>
+            <div class="dl-platform-sub">macOS 12 Monterey or newer</div>
+            <div class="dl-links">
+              <a id="link-mac-arm64" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-arm64.dmg" class="dl-btn">
+                <span>Apple Silicon (M1/M2/M3/M4)</span>
+                <span class="dl-ext">.dmg</span>
+              </a>
+              <a id="link-mac-x86" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-x86_64.dmg" class="dl-btn">
+                <span>Intel (x86_64)</span>
+                <span class="dl-ext">.dmg</span>
+              </a>
             </div>
-            <p class="platform-desc">
-              Optimized for Apple Silicon (M1/M2/M3/M4) with Metal video acceleration, plus Intel x86_64 support.
-            </p>
           </div>
-          <div class="card-files">
-            <a id="link-mac-arm64" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-arm64.dmg" class="file-btn">
-              <span>Apple Silicon (M1/M2/M3/M4)</span>
-              <span class="file-ext">.dmg</span>
-            </a>
-            <a id="link-mac-x86" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-macOS-x86_64.dmg" class="file-btn">
-              <span>Intel (x86_64)</span>
-              <span class="file-ext">.dmg</span>
-            </a>
-          </div>
-          <div class="cmd-box">
+          <div class="cli-note">
             <span>xattr -cr /Applications/Stagelite.app</span>
-            <button class="btn-copy" onclick="copyText('xattr -cr /Applications/Stagelite.app', this)">Copy</button>
+            <button class="btn-copy-clip" onclick="copySnippet('xattr -cr /Applications/Stagelite.app', this)">Copy</button>
           </div>
         </div>
 
         <!-- Windows -->
-        <div class="download-card" id="card-windows">
+        <div class="dl-card" id="card-windows">
           <div>
-            <div class="platform-header">
-              <div class="platform-icon">🪟</div>
-              <div>
-                <div class="platform-title">Windows</div>
-                <div class="platform-subtitle">Windows 11 / 10 (64-bit)</div>
-              </div>
+            <div class="dl-platform-title">Windows</div>
+            <div class="dl-platform-sub">Windows 11 / 10 (64-bit)</div>
+            <div class="dl-links">
+              <a id="link-win-setup" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Setup.exe" class="dl-btn">
+                <span>Windows Setup Installer</span>
+                <span class="dl-ext">.exe</span>
+              </a>
+              <a id="link-win-portable" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite.exe" class="dl-btn">
+                <span>Standalone Portable</span>
+                <span class="dl-ext">.exe</span>
+              </a>
             </div>
-            <p class="platform-desc">
-              Clean NSIS Setup Installer with desktop shortcuts, or standalone portable executable.
-            </p>
           </div>
-          <div class="card-files">
-            <a id="link-win-setup" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Setup.exe" class="file-btn">
-              <span>Windows Installer (Setup)</span>
-              <span class="file-ext">.exe</span>
-            </a>
-            <a id="link-win-portable" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite.exe" class="file-btn">
-              <span>Standalone Portable</span>
-              <span class="file-ext">.exe</span>
-            </a>
-          </div>
-          <div class="cmd-box">
+          <div class="cli-note">
             <span>SmartScreen: Click "More info" &gt; Run</span>
           </div>
         </div>
 
         <!-- Linux -->
-        <div class="download-card" id="card-linux">
+        <div class="dl-card" id="card-linux">
           <div>
-            <div class="platform-header">
-              <div class="platform-icon">🐧</div>
-              <div>
-                <div class="platform-title">Linux</div>
-                <div class="platform-subtitle">Ubuntu, Debian, Fedora, Arch</div>
-              </div>
+            <div class="dl-platform-title">Linux</div>
+            <div class="dl-platform-sub">Ubuntu, Debian, Fedora, Arch</div>
+            <div class="dl-links">
+              <a id="link-linux-appimage" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.AppImage" class="dl-btn">
+                <span>Universal AppImage (x64)</span>
+                <span class="dl-ext">.AppImage</span>
+              </a>
+              <a id="link-linux-deb" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.deb" class="dl-btn">
+                <span>Debian / Ubuntu Package</span>
+                <span class="dl-ext">.deb</span>
+              </a>
             </div>
-            <p class="platform-desc">
-              Plug-and-play universal AppImage with Wayland/X11 PipeWire support, and native Debian packages.
-            </p>
           </div>
-          <div class="card-files">
-            <a id="link-linux-appimage" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.AppImage" class="file-btn">
-              <span>Universal AppImage (x64)</span>
-              <span class="file-ext">.AppImage</span>
-            </a>
-            <a id="link-linux-deb" href="https://github.com/5u00n/stagelite-releases/releases/latest/download/Stagelite-Linux-x64.deb" class="file-btn">
-              <span>Debian / Ubuntu Package</span>
-              <span class="file-ext">.deb</span>
-            </a>
-          </div>
-          <div class="cmd-box">
+          <div class="cli-note">
             <span>chmod +x Stagelite-Linux-x64.AppImage</span>
-            <button class="btn-copy" onclick="copyText('chmod +x Stagelite-Linux-x64.AppImage', this)">Copy</button>
+            <button class="btn-copy-clip" onclick="copySnippet('chmod +x Stagelite-Linux-x64.AppImage', this)">Copy</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Installation & First-Run Notes -->
-    <section id="install-notes">
-      <div class="faq-section">
-        <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; color: #ffffff;">First-Run & Installation Guidance</h3>
+    <!-- First Run Notes -->
+    <section>
+      <div class="faq-panel">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #ffffff; margin-bottom: 20px;">First-Run & Installation Guidance</h3>
 
-        <div class="faq-item">
-          <h4>🍏 macOS Gatekeeper Guidance (Ad-Hoc / Community Build)</h4>
-          <p>Because Stagelite is distributed directly without the Mac App Store, macOS Gatekeeper may show: <em>"Stagelite cannot be opened because Apple cannot check it for malicious software"</em>.</p>
-          <p style="margin-top: 6px;"><strong>To launch:</strong> Open <strong>System Settings > Privacy & Security</strong>, scroll down to the Security section, and click <strong>Open Anyway</strong>. Or simply run this one-time command in Terminal: <code style="color: #38bdf8; background: #090a0f; padding: 2px 6px; border-radius: 4px;">xattr -cr /Applications/Stagelite.app</code></p>
+        <div class="faq-row">
+          <h4>macOS Gatekeeper Note (Direct Download)</h4>
+          <p>Because Stagelite is distributed directly without the Mac App Store, macOS may show a prompt: <em>"Stagelite cannot be opened because Apple cannot check it for malicious software"</em>. Open <strong>System Settings > Privacy & Security</strong>, scroll down, and click <strong>Open Anyway</strong>, or run <code style="color: #38bdf8; font-family: var(--font-mono);">xattr -cr /Applications/Stagelite.app</code> in Terminal.</p>
         </div>
 
-        <div class="faq-item">
-          <h4>🪟 Windows SmartScreen Notice</h4>
-          <p>On Windows 10/11, Windows SmartScreen may show <em>"Windows protected your PC"</em> on newly released binaries. Click <strong>More info</strong> and then click <strong>Run anyway</strong>.</p>
+        <div class="faq-row">
+          <h4>Windows SmartScreen Notice</h4>
+          <p>On Windows 10/11, SmartScreen may show <em>"Windows protected your PC"</em> on brand-new builds. Click <strong>More info</strong> and then click <strong>Run anyway</strong>.</p>
         </div>
 
-        <div class="faq-item">
-          <h4>🐧 Linux AppImage Execution</h4>
-          <p>Grant execute permissions before launching: <code style="color: #38bdf8; background: #090a0f; padding: 2px 6px; border-radius: 4px;">chmod +x Stagelite-Linux-x64.AppImage</code></p>
+        <div class="faq-row">
+          <h4>Linux AppImage Execution</h4>
+          <p>Ensure execute permissions are enabled before launching: <code style="color: #38bdf8; font-family: var(--font-mono);">chmod +x Stagelite-Linux-x64.AppImage</code></p>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
     <footer>
-      <div class="footer-content">
+      <div class="footer-flex">
         <div>
-          <p style="color: #cbd5e1; font-weight: 600;">Stagelite v1.0 Production Edition</p>
-          <p style="margin-top: 4px;">Designed for high-reliability live presentation and broadcast environments.</p>
+          <strong style="color: #ffffff;">Stagelite v1.0 Production Edition</strong>
+          <div style="margin-top: 4px;">Designed for high-reliability live presentation and broadcast environments.</div>
         </div>
-        <div class="footer-links">
+        <div class="footer-nav">
           <a href="guide.html" target="_blank">Web Manual</a>
-          <a href="Stagelite_Operator_Guide.pdf" target="_blank">Operator PDF</a>
+          <a href="Stagelite_Operator_Guide.pdf" target="_blank">PDF Manual</a>
           <a href="https://github.com/5u00n/stagelite-releases" target="_blank">GitHub</a>
           <a href="#downloads">Downloads</a>
         </div>
@@ -2351,142 +1703,103 @@
   </div>
 
   <script>
-    // Tab Switching for Interactive Studio Showcase
-    function switchView(viewName, tabEl) {
-      document.querySelectorAll('.mode-tab').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.view-content-pane').forEach(el => el.classList.remove('active'));
-
-      if (tabEl) tabEl.classList.add('active');
-      const targetPane = document.getElementById('view-' + viewName);
-      if (targetPane) targetPane.classList.add('active');
+    // Tab switcher
+    function setConsoleTab(tabName, el) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.view-pane').forEach(pane => pane.classList.remove('active'));
+      if (el) el.classList.add('active');
+      const target = document.getElementById('pane-' + tabName);
+      if (target) target.classList.add('active');
     }
 
-    // Interactive Slide Selection inside Master Studio Showcase
-    const slidesData = [
+    // Slide interaction
+    const slides = [
       {
-        num: 1,
-        name: "Verse 1",
-        tag: "VERSE 1 OF 4 · ON AIR",
-        line1: "Amazing grace! How sweet the sound",
-        line2: "That saved a wretch like me!",
-        mirrorText: "Amazing grace! How sweet the sound<br><span style='font-size:0.74rem;color:#94a3b8;'>That saved a wretch like me!</span>",
-        confCurrent: "<strong>Now:</strong> Amazing grace! How sweet...",
-        confNext: "<strong>Next:</strong> 'Twas grace that taught my heart..."
+        tag: "VERSE 1 OF 4",
+        l1: "Amazing grace! How sweet the sound",
+        l2: "That saved a wretch like me!",
+        mirror: "Amazing grace! How sweet the sound<br><span style='font-size:0.7rem;color:#94a3b8;'>That saved a wretch like me!</span>",
+        now: "<strong>Now:</strong> Amazing grace! How sweet...",
+        next: "<strong>Next:</strong> 'Twas grace that taught..."
       },
       {
-        num: 2,
-        name: "Verse 2",
-        tag: "VERSE 2 OF 4 · ON AIR",
-        line1: "'Twas grace that taught my heart to fear,",
-        line2: "And grace my fears relieved;",
-        mirrorText: "'Twas grace that taught my heart to fear,<br><span style='font-size:0.74rem;color:#94a3b8;'>And grace my fears relieved;</span>",
-        confCurrent: "<strong>Now:</strong> 'Twas grace that taught my heart...",
-        confNext: "<strong>Next:</strong> How precious did that grace appear..."
+        tag: "VERSE 2 OF 4",
+        l1: "'Twas grace that taught my heart to fear,",
+        l2: "And grace my fears relieved;",
+        mirror: "'Twas grace that taught my heart to fear,<br><span style='font-size:0.7rem;color:#94a3b8;'>And grace my fears relieved;</span>",
+        now: "<strong>Now:</strong> 'Twas grace that taught...",
+        next: "<strong>Next:</strong> Through many dangers, toils..."
       },
       {
-        num: 3,
-        name: "Verse 3",
-        tag: "VERSE 3 OF 4 · ON AIR",
-        line1: "Through many dangers, toils, and snares",
-        line2: "I have already come;",
-        mirrorText: "Through many dangers, toils, and snares<br><span style='font-size:0.74rem;color:#94a3b8;'>I have already come;</span>",
-        confCurrent: "<strong>Now:</strong> Through many dangers, toils...",
-        confNext: "<strong>Next:</strong> When we've been there ten thousand years..."
+        tag: "VERSE 3 OF 4",
+        l1: "Through many dangers, toils, and snares",
+        l2: "I have already come;",
+        mirror: "Through many dangers, toils, and snares<br><span style='font-size:0.7rem;color:#94a3b8;'>I have already come;</span>",
+        now: "<strong>Now:</strong> Through many dangers, toils...",
+        next: "<strong>Next:</strong> When we've been there ten thousand years..."
       },
       {
-        num: 4,
-        name: "Verse 4",
-        tag: "VERSE 4 OF 4 · ON AIR",
-        line1: "When we've been there ten thousand years,",
-        line2: "Bright shining as the sun!",
-        mirrorText: "When we've been there ten thousand years,<br><span style='font-size:0.74rem;color:#94a3b8;'>Bright shining as the sun!</span>",
-        confCurrent: "<strong>Now:</strong> When we've been there ten thousand years...",
-        confNext: "<strong>Next:</strong> [End of Song · Scripture Next]"
+        tag: "VERSE 4 OF 4",
+        l1: "When we've been there ten thousand years,",
+        l2: "Bright shining as the sun!",
+        mirror: "When we've been there ten thousand years,<br><span style='font-size:0.7rem;color:#94a3b8;'>Bright shining as the sun!</span>",
+        now: "<strong>Now:</strong> When we've been there ten thousand years...",
+        next: "<strong>Next:</strong> [End of song · Scripture next]"
       }
     ];
 
-    let currentSlideIdx = 0;
-    let isBlanked = false;
+    let currentIdx = 0;
+    let isBlank = false;
 
-    function selectSlide(slideNum) {
-      currentSlideIdx = slideNum - 1;
-      updateSlideDisplay();
+    function jumpSlide(num) {
+      currentIdx = num - 1;
+      renderSlide();
     }
 
-    function stepSlide(delta) {
-      currentSlideIdx = Math.max(0, Math.min(slidesData.length - 1, currentSlideIdx + delta));
-      updateSlideDisplay();
+    function navSlide(delta) {
+      currentIdx = Math.max(0, Math.min(slides.length - 1, currentIdx + delta));
+      renderSlide();
     }
 
-    function updateSlideDisplay() {
-      const data = slidesData[currentSlideIdx];
-      
-      // Update Slide Cards
+    function renderSlide() {
+      const data = slides[currentIdx];
       for (let i = 1; i <= 4; i++) {
-        const card = document.getElementById('slide-thumb-' + i);
-        if (card) {
-          if (i === (currentSlideIdx + 1)) {
-            card.classList.add('active-live');
-            let tally = card.querySelector('.slide-tally-pill');
-            if (!tally) {
-              const hdr = card.querySelector('.slide-card-header');
-              if (hdr) {
-                const p = document.createElement('span');
-                p.className = 'slide-tally-pill';
-                p.textContent = 'LIVE';
-                hdr.appendChild(p);
-              }
-            }
+        const c = document.getElementById('th-' + i);
+        if (c) {
+          if (i === (currentIdx + 1)) {
+            c.classList.add('active');
           } else {
-            card.classList.remove('active-live');
-            const tally = card.querySelector('.slide-tally-pill');
-            if (tally) tally.remove();
+            c.classList.remove('active');
           }
         }
       }
-
-      // Update Cinema Screen
-      const cinemaTag = document.getElementById('cinema-tag');
-      const cinemaLyrics = document.getElementById('cinema-lyrics');
-      const mirrorText = document.getElementById('mirror-lyrics-text');
-      const confCurrent = document.getElementById('confidence-current');
-      const confNext = document.getElementById('confidence-next');
-
-      if (!isBlanked) {
-        if (cinemaTag) cinemaTag.textContent = data.tag;
-        if (cinemaLyrics) {
-          cinemaLyrics.innerHTML = `${data.line1}<span class="sub-line">${data.line2}</span>`;
-        }
-        if (mirrorText) mirrorText.innerHTML = data.mirrorText;
+      if (!isBlank) {
+        document.getElementById('c-chip').textContent = data.tag;
+        document.getElementById('c-text').innerHTML = `${data.l1}<span>${data.l2}</span>`;
+        document.getElementById('m-text').innerHTML = data.mirror;
       }
-      if (confCurrent) confCurrent.innerHTML = data.confCurrent;
-      if (confNext) confNext.innerHTML = data.confNext;
+      document.getElementById('conf-now').innerHTML = data.now;
+      document.getElementById('conf-next').innerHTML = data.next;
     }
 
     function toggleBlank() {
-      isBlanked = !isBlanked;
-      const cinemaLyrics = document.getElementById('cinema-lyrics');
-      const mirrorText = document.getElementById('mirror-lyrics-text');
-      const cinemaTag = document.getElementById('cinema-tag');
-
-      if (isBlanked) {
-        if (cinemaLyrics) cinemaLyrics.innerHTML = '<span style="color: #64748b; font-size: 1rem;">[ SCREEN BLACKED OUT (B) ]</span>';
-        if (mirrorText) mirrorText.innerHTML = '<span style="color: #ef4444; font-size: 0.75rem;">● FADED TO BLACK</span>';
-        if (cinemaTag) cinemaTag.textContent = 'BLANK SCREEN ACTIVE';
+      isBlank = !isBlank;
+      if (isBlank) {
+        document.getElementById('c-chip').textContent = 'BLANK SCREEN';
+        document.getElementById('c-text').innerHTML = '<span style="color:#52525b;">[ FADED TO BLACK (B) ]</span>';
+        document.getElementById('m-text').innerHTML = '<span style="color:#ef4444;">● BLACKOUT ACTIVE</span>';
       } else {
-        updateSlideDisplay();
+        renderSlide();
       }
     }
 
     function toggleClear() {
-      const cinemaLyrics = document.getElementById('cinema-lyrics');
-      const mirrorText = document.getElementById('mirror-lyrics-text');
-      if (cinemaLyrics) cinemaLyrics.innerHTML = '<span style="color: #94a3b8; font-size: 0.9rem;">(Background Graphic Only · Text Cleared)</span>';
-      if (mirrorText) mirrorText.innerHTML = '<span style="color: #94a3b8; font-size: 0.75rem;">Clear Active</span>';
+      document.getElementById('c-text').innerHTML = '<span style="color:#71717a;font-size:0.95rem;">(Text Cleared · Background Graphic Preserved)</span>';
+      document.getElementById('m-text').innerHTML = '<span style="color:#94a3b8;">Clear Active</span>';
     }
 
-    function selectRundown(num) {
-      document.querySelectorAll('.rundown-item').forEach((el, idx) => {
+    function pickShow(num) {
+      document.querySelectorAll('.playlist-row').forEach((el, idx) => {
         if (idx === (num - 1)) {
           el.classList.add('active');
         } else {
@@ -2495,79 +1808,62 @@
       });
     }
 
-    // Modal Guide Reader
-    function openGuideModal() {
-      document.getElementById('guide-modal').classList.add('open');
-      document.body.style.overflow = 'hidden';
+    // Modal
+    function toggleReader(open) {
+      const modal = document.getElementById('reader-modal');
+      if (open) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      } else {
+        modal.classList.remove('open');
+        document.body.style.overflow = 'auto';
+      }
     }
 
-    function closeGuideModal() {
-      document.getElementById('guide-modal').classList.remove('open');
-      document.body.style.overflow = 'auto';
-    }
-
-    // Copy to clipboard helper
-    function copyText(str, el) {
-      navigator.clipboard.writeText(str).then(() => {
-        const originalText = el.textContent;
+    // Copy snippet
+    function copySnippet(text, el) {
+      navigator.clipboard.writeText(text).then(() => {
+        const prev = el.textContent;
         el.textContent = 'Copied!';
-        setTimeout(() => {
-          el.textContent = originalText;
-        }, 1800);
+        setTimeout(() => el.textContent = prev, 1500);
       });
     }
 
-    // Smart OS & Architecture Detection
-    (function detectPlatform() {
+    // OS Detection
+    (function detectOS() {
       const heroBtn = document.getElementById('hero-download-btn');
       const heroText = document.getElementById('hero-download-text');
       const heroHint = document.getElementById('hero-os-hint');
 
-      const userAgent = window.navigator.userAgent.toLowerCase();
-      const platform = (window.navigator.platform || '').toLowerCase();
+      const ua = navigator.userAgent.toLowerCase();
+      const plat = (navigator.platform || '').toLowerCase();
 
       const macArm = document.getElementById('link-mac-arm64').href;
       const winSetup = document.getElementById('link-win-setup').href;
       const linuxAppImage = document.getElementById('link-linux-appimage').href;
 
-      if (userAgent.includes('mac') || platform.includes('mac')) {
+      if (ua.includes('mac') || plat.includes('mac')) {
         heroBtn.href = macArm;
         heroText.textContent = 'Download for macOS (Apple Silicon)';
-        heroHint.textContent = 'Detected macOS • Apple Silicon (M1/M2/M3/M4) .dmg ready';
-        const card = document.getElementById('card-macos');
-        if (card) card.classList.add('highlighted');
-      } else if (userAgent.includes('win') || platform.includes('win')) {
+        heroHint.textContent = 'macOS detected • Apple Silicon (M1/M2/M3/M4) .dmg ready';
+        const c = document.getElementById('card-macos');
+        if (c) c.classList.add('highlight');
+      } else if (ua.includes('win') || plat.includes('win')) {
         heroBtn.href = winSetup;
         heroText.textContent = 'Download for Windows (Installer)';
-        heroHint.textContent = 'Detected Windows • 64-bit Setup Installer selected';
-        const card = document.getElementById('card-windows');
-        if (card) card.classList.add('highlighted');
-      } else if (userAgent.includes('linux') || platform.includes('linux')) {
+        heroHint.textContent = 'Windows detected • 64-bit Setup Installer ready';
+        const c = document.getElementById('card-windows');
+        if (c) c.classList.add('highlight');
+      } else if (ua.includes('linux') || plat.includes('linux')) {
         heroBtn.href = linuxAppImage;
         heroText.textContent = 'Download for Linux (.AppImage)';
-        heroHint.textContent = 'Detected Linux • Universal AppImage selected';
-        const card = document.getElementById('card-linux');
-        if (card) card.classList.add('highlighted');
+        heroHint.textContent = 'Linux detected • Universal AppImage ready';
+        const c = document.getElementById('card-linux');
+        if (c) c.classList.add('highlight');
       } else {
         heroBtn.href = '#downloads';
         heroText.textContent = 'View All Downloads';
-        heroHint.textContent = 'Select your platform from the options below';
-      }
-    })();
-
-    // Optional dynamic release tag updater from GitHub API
-    (async function fetchLatestRelease() {
-      try {
-        const repo = '5u00n/stagelite-releases';
-        const res = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data.tag_name) {
-          const badge = document.getElementById('version-badge');
-          if (badge) badge.textContent = `Stagelite ${data.tag_name} Production Release · Zero Dropped Frames`;
-        }
-      } catch (e) {
-        // Fallback
+        heroHint.textContent = 'Choose your operating system below';
       }
     })();
   </script>
